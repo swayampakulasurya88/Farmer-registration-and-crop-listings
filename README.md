@@ -31,8 +31,7 @@ Open **http://localhost:3000**
 
 | Role    | Email / Username          | Password    |
 |---------|---------------------------|-------------|
-| Admin   | `admin@krishisetu.gov` or `DISTRICT_ADMIN` | admin123 |
-| Admin   | `suryas@krishisetu.gov` or **`SURYAS`** | SURYAS2007 |
+| Admin   | **`SURYAS`** (or `suryas@krishisetu.gov`) | SURYAS2007 |
 | Farmer  | ramesh@demo.in            | farmer123   |
 | Buyer   | buyer@demo.in             | buyer123    |
 
