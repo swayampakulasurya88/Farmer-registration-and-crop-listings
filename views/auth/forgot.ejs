@@ -1,0 +1,42 @@
+<%- include('../partials/header') %>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-head">
+      <span class="auth-emoji">🔑</span>
+      <h1>Forgot your password?</h1>
+      <p>Enter your registered email or username and we'll send you a 6-digit OTP.</p>
+    </div>
+
+    <% if (sent) { %>
+      <div class="notice notice-success">
+        ✅ <%= info %>
+      </div>
+
+      <% if (demoOtp) { %>
+        <div class="notice notice-warn">
+          🧪 <strong>DEMO MODE</strong> — no email server is configured, so here is your
+          one-time code:<br>
+          <span class="otp-display"><%= demoOtp %></span><br>
+          <span class="small">(also printed in the server console — valid for 10 minutes)</span>
+        </div>
+      <% } %>
+
+      <a href="/auth/reset" class="btn btn-primary btn-block btn-lg mt">Continue → Enter OTP</a>
+    <% } else { %>
+      <form method="post" action="/auth/forgot" class="form" novalidate>
+        <div class="field">
+          <label for="login">Email address or username</label>
+          <input type="text" id="login" name="login" value="<%= form.login || '' %>" placeholder="you@example.com or SURYAS" required autofocus>
+          <% if (fieldErrors.login) { %><p class="field-error"><%= fieldErrors.login %></p><% } %>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg">📧 Send OTP</button>
+      </form>
+    <% } %>
+
+    <p class="auth-foot"><a href="/auth/login">← Back to login</a></p>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

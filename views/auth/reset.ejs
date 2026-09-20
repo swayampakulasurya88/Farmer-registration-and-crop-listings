@@ -1,0 +1,51 @@
+<%- include('../partials/header') %>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-head">
+      <span class="auth-emoji">🔐</span>
+      <h1>Reset your password</h1>
+      <p>Enter the OTP sent to your email and choose a new password.</p>
+    </div>
+
+    <% if (demoOtp) { %>
+      <div class="notice notice-warn">
+        🧪 <strong>DEMO MODE</strong> — your one-time code is:
+        <span class="otp-display"><%= demoOtp %></span>
+      </div>
+    <% } %>
+
+    <form method="post" action="/auth/reset" class="form" novalidate>
+      <div class="field">
+        <label for="login">Email address or username</label>
+        <input type="text" id="login" name="login" value="<%= form.login || '' %>" placeholder="you@example.com or SURYAS" required>
+        <% if (fieldErrors.login) { %><p class="field-error"><%= fieldErrors.login %></p><% } %>
+      </div>
+
+      <div class="field">
+        <label for="otp">6-digit OTP</label>
+        <input type="text" id="otp" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="123456" required>
+        <% if (fieldErrors.otp) { %><p class="field-error"><%= fieldErrors.otp %></p><% } %>
+      </div>
+
+      <div class="field">
+        <label for="password">New password (min 6 characters)</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required>
+        <% if (fieldErrors.password) { %><p class="field-error"><%= fieldErrors.password %></p><% } %>
+      </div>
+
+      <div class="field">
+        <label for="confirm">Confirm new password</label>
+        <input type="password" id="confirm" name="confirm" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg">🔒 Update password</button>
+    </form>
+
+    <p class="auth-foot">
+      <a href="/auth/login">← Back to login</a> · OTP valid for <%= otpTtlMin %> minutes
+    </p>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -6,6 +6,8 @@ const bcrypt = require('bcryptjs');
 
 const db = require('../data/db');
 const { VILLAGES, BUSINESS_TYPES } = require('../config');
+const { generate: genOtp, verify: verifyOtp, OTP_TTL_MS } = require('../utils/otp');
+const { sendOtpEmail } = require('../utils/mailer');
 
 const router = express.Router();
 
@@ -109,6 +111,104 @@ router.post('/auth/logout', (req, res) => {
     res.clearCookie('krishisetu.sid');
     res.redirect('/?msg=You+have+been+logged+out');
   });
+});
+
+/* ------------------------- Forgot password ------------------------- */
+
+router.get('/auth/forgot', (req, res) => {
+  res.render('auth/forgot', {
+    title: 'Forgot password',
+    form: {},
+    fieldErrors: {},
+    sent: false,
+    demoOtp: null,
+  });
+});
+
+router.post('/auth/forgot', async (req, res) => {
+  const { login } = req.body;
+  try {
+    const user = db.findUserByLogin(login);
+    let demoOtp = null;
+
+    if (user) {
+      const otp = genOtp(user.id, user.email);
+      const result = await sendOtpEmail({ to: user.email, name: user.name, otp });
+      if (result.demo) {
+        req.session.demoOtp = String(otp);
+        demoOtp = String(otp);
+      }
+    }
+
+    // Generic message so account existence is not disclosed.
+    res.render('auth/forgot', {
+      title: 'Forgot password',
+      form: { login },
+      fieldErrors: {},
+      sent: true,
+      info: user
+        ? `An OTP has been sent to the email registered for ${login}.`
+        : `If an account exists for ${login}, an OTP email has been sent.`,
+      demoOtp,
+    });
+  } catch (err) {
+    console.error('OTP email failed:', err);
+    res.status(500).render('auth/forgot', {
+      title: 'Forgot password',
+      form: { login },
+      fieldErrors: { login: 'Could not send the OTP email. Please try again.' },
+      sent: false,
+      demoOtp: null,
+    });
+  }
+});
+
+/* --------------------------- Reset password ------------------------ */
+
+router.get('/auth/reset', (req, res) => {
+  res.render('auth/reset', {
+    title: 'Reset password',
+    form: { login: '' },
+    fieldErrors: {},
+    demoOtp: req.session.demoOtp || null,
+    otpTtlMin: OTP_TTL_MS / 60000,
+  });
+});
+
+router.post('/auth/reset', (req, res) => {
+  const { login, otp, password, confirm } = req.body;
+  const fieldErrors = {};
+
+  const user = db.findUserByLogin(login);
+  if (!user) {
+    fieldErrors.login = 'No account found with that email or username.';
+  } else {
+    const check = verifyOtp(user.id, otp);
+    if (!check.ok) {
+      fieldErrors.otp =
+        check.reason === 'locked'
+          ? 'Too many wrong attempts. Please request a new OTP.'
+          : 'Invalid or expired OTP. Please request a new one.';
+    }
+  }
+
+  if (!password || password.length < 6) fieldErrors.password = 'Password must be at least 6 characters.';
+  else if (password !== confirm) fieldErrors.password = 'Passwords do not match.';
+
+  if (Object.keys(fieldErrors).length) {
+    return res.status(400).render('auth/reset', {
+      title: 'Reset password',
+      form: { login },
+      fieldErrors,
+      demoOtp: req.session.demoOtp || null,
+      otpTtlMin: OTP_TTL_MS / 60000,
+    });
+  }
+
+  db.updateUser(user.id, { passwordHash: bcrypt.hashSync(password, 10) });
+  req.session.demoOtp = null;
+
+  res.redirect('/auth/login?msg=' + encodeURIComponent('Password updated! Login with your new password.'));
 });
 
 module.exports = router;

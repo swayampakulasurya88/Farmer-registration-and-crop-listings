@@ -39,6 +39,23 @@ Open **http://localhost:3000**
 
 ---
 
+## 📧 Forgot password & OTP
+
+1. On the login page click **Forgot password?** and enter your email or username.
+2. A **6-digit OTP** is sent to the registered email (valid 10 minutes, one-time use, max 5 attempts).
+3. Enter the OTP + a new password on the reset page.
+
+**Demo mode (default):** no email server is configured, so the OTP is shown directly on the page and printed in the server console.
+
+**Real email:** configure SMTP before starting:
+
+```bash
+SMTP_HOST=smtp.gmail.com SMTP_PORT=587 SMTP_USER=you@gmail.com \
+SMTP_PASS="your-app-password" MAIL_FROM="KrishiSetu <you@gmail.com>" npm start
+```
+
+---
+
 ## 📁 Project structure (file-by-file)
 
 ```
@@ -66,7 +83,9 @@ Farmerregistrationandcroplistings/
 │
 ├── utils/
 │   ├── format.js             # ₹ formatting, quantity → kg conversion, date helpers
-│   └── trends.js             # Weekly price series, volume aggregation, price-movement tables
+│   ├── trends.js             # Weekly price series, volume aggregation, price-movement tables
+│   ├── otp.js                # 6-digit OTP generation, expiry (10 min) & verification
+│   └── mailer.js             # OTP email: real SMTP or demo mode (prints OTP to console)
 │
 ├── views/                    # EJS templates
 │   ├── partials/
@@ -109,6 +128,7 @@ Farmerregistrationandcroplistings/
 | `/listings/:id` | everyone | Full structured record; contact + interest for logged-in users |
 | `/trends` | everyone | Weekly price charts (₹/kg) and volume bar chart, live-computed |
 | `/auth/register` · `/auth/login` | guests | Farmer/buyer registration & login |
+| `/auth/forgot` · `/auth/reset` | guests | Forgot password: request OTP → email → set new password |
 | `/farmer/dashboard` | farmer | Manage my listings; see buyer interests with contacts |
 | `/farmer/listings/new`, `/…/edit`, status toggle, delete | farmer | Full listing CRUD (owner-only) |
 | `/buyer/dashboard` | buyer | Saved listings + my interests sent |
@@ -127,6 +147,7 @@ Farmerregistrationandcroplistings/
 4. **Price trends (charts)** — `utils/trends.js` aggregates the structured records into weekly averages and volumes; Chart.js renders them on `/trends`.
 5. **Buyer dashboard & saved searches** — favorites ("♥") and interest history on `/buyer/dashboard`.
 6. **Admin panel** — statistics, user activation/deactivation (deactivated farmers' listings are hidden), listing removal, CSV export.
+7. **Forgot password (OTP)** — "Forgot password?" sends a 6-digit OTP to the registered email; works in demo mode (OTP shown on screen + console) or with real SMTP email (set `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`). OTP expires in 10 minutes, one-time use, max 5 attempts.
 
 ---
 

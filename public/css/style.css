@@ -461,6 +461,22 @@ a:hover { text-decoration: underline; }
 .demo-cred summary { color: var(--muted); font-weight: 600; }
 .demo-cred ul { margin: 10px 0 0 18px; color: var(--muted); line-height: 1.9; }
 
+.forgot-link { text-align: right; font-size: 0.88rem; margin: -4px 0 14px; }
+
+.otp-display {
+  display: inline-block;
+  font-family: 'Poppins', monospace;
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: 0.35em;
+  color: var(--primary-dark);
+  background: #fff;
+  border: 2px dashed var(--primary);
+  border-radius: 10px;
+  padding: 6px 16px 6px 20px;
+  margin: 8px 0;
+}
+
 /* ---------------- CTA banner ---------------- */
 .cta-banner { padding-top: 10px; }
 .cta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
