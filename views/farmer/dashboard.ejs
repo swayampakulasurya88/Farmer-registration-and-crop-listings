@@ -1,0 +1,106 @@
+<%- include('../partials/header') %>
+
+<div class="page-head dash-head">
+  <div>
+    <h1>👨‍🌾 <%= farmer.name %>'s dashboard</h1>
+    <p class="muted"><%= farmer.village %> · <%= farmer.landSize || '' %> · <%= farmer.phone %></p>
+  </div>
+  <a href="/farmer/listings/new" class="btn btn-primary btn-lg">＋ New crop listing</a>
+</div>
+
+<div class="dash-stats">
+  <div class="stat-card stat-card-plain">
+    <span class="stat-num"><%= activeCount %></span>
+    <span class="stat-label">Active listings</span>
+  </div>
+  <div class="stat-card stat-card-plain">
+    <span class="stat-num"><%= listings.length %></span>
+    <span class="stat-label">Total posted</span>
+  </div>
+  <div class="stat-card stat-card-plain">
+    <span class="stat-num"><%= interestCount %></span>
+    <span class="stat-label">Buyer interests received</span>
+  </div>
+</div>
+
+<div class="two-col">
+  <!-- ============ My listings ============ -->
+  <section class="col">
+    <div class="col-head">
+      <h2>My crop listings</h2>
+      <a href="/listings?q=<%= encodeURIComponent(farmer.name.split(' ')[0]) %>" class="btn btn-ghost btn-sm">View public →</a>
+    </div>
+
+    <% if (listings.length) { %>
+      <div class="stack">
+        <% listings.forEach((l) => { %>
+          <%
+            const emoji = config.CROP_EMOJI[l.crop] || '🌾';
+          %>
+          <div class="card row-card">
+            <span class="crop-emoji"><%= emoji %></span>
+            <div class="row-main">
+              <strong class="crop-name"><%= l.crop %> <span class="muted">· <%= l.variety %></span></strong>
+              <span class="muted small">
+                <%= Number(l.quantity).toLocaleString('en-IN') %> <%= l.unit %> ·
+                ₹<%= Number(l.price).toLocaleString('en-IN') %>/<%= l.priceUnit.replace('per ', '') %> ·
+                <%= l.location %>
+              </span>
+            </div>
+            <span class="badge badge-status badge-<%= l.status %>"><%= l.status %></span>
+            <div class="row-actions">
+              <a class="btn btn-ghost btn-sm" href="/listings/<%= l.id %>">View</a>
+              <a class="btn btn-outline btn-sm" href="/farmer/listings/<%= l.id %>/edit">Edit</a>
+              <form method="post" action="/farmer/listings/<%= l.id %>/status" class="inline-form">
+                <button class="btn btn-ghost btn-sm" type="submit" title="Toggle availability">
+                  <%= l.status === 'active' ? 'Sold' : 'Active' %>
+                </button>
+              </form>
+              <form method="post" action="/farmer/listings/<%= l.id %>?_method=DELETE" class="inline-form" data-confirm="Delete this listing?">
+                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <p>You haven't posted any listings yet. <a href="/farmer/listings/new">List your first crop</a> and reach every buyer in the district.</p>
+      </div>
+    <% } %>
+  </section>
+
+  <!-- ============ Interests received ============ -->
+  <section class="col">
+    <h2>Buyer interests</h2>
+    <% if (interests.length) { %>
+      <div class="stack">
+        <% interests.forEach(({ interest, buyer, listing }) => { %>
+          <% if (!listing) return; %>
+          <div class="card interest-card">
+            <div class="interest-head">
+              <strong>🛒 <%= buyer ? buyer.name : 'Buyer' %></strong>
+              <span class="muted small"><%= new Date(interest.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) %></span>
+            </div>
+            <p class="small">
+              Interested in <a href="/listings/<%= listing.id %>"><strong><%= listing.crop %></strong></a>
+              (<%= Number(listing.quantity).toLocaleString('en-IN') %> <%= listing.unit %> · ₹<%= listing.price %>/<%= listing.priceUnit.replace('per ', '') %>)
+            </p>
+            <% if (interest.message) { %><blockquote class="interest-msg">“<%= interest.message %>”</blockquote><% } %>
+            <% if (buyer) { %>
+              <div class="interest-contact small">
+                📞 <%= buyer.phone %> · 📍 <%= buyer.village %> · <%= buyer.businessType || '' %>
+              </div>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <p>No buyer interest yet. When buyers express interest in your listings, their contact details appear here.</p>
+      </div>
+    <% } %>
+  </section>
+</div>
+
+<%- include('../partials/footer') %>

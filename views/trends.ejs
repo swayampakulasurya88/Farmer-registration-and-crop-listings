@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+
+<div class="page-head">
+  <h1>Price trends &amp; market intelligence</h1>
+  <p>
+    Charts are computed live from the structured records:
+    every listing stores <em>crop, quantity, price and date</em> uniformly, so we can
+    aggregate weekly averages and volumes automatically.
+  </p>
+  <p class="muted small">Note: the price chart shows ₹/kg for listings quoted per kg (mixed units aren't comparable on one axis).</p>
+</div>
+
+<!-- Chart data -->
+<script>window.CROP_CHART_DATA = <%- chartJson %>;</script>
+
+<div class="two-charts">
+  <div class="card chart-card">
+    <h3>📈 Average price per week (₹/kg)</h3>
+    <canvas id="priceChart" height="320"></canvas>
+  </div>
+  <div class="card chart-card">
+    <h3>📦 Listed volume — last 30 days (kg)</h3>
+    <canvas id="volumeChart" height="320"></canvas>
+  </div>
+</div>
+
+<!-- Latest table -->
+<div class="card mt">
+  <h3>🧮 Latest average rates (₹/kg, last 14 days)</h3>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Crop</th><th>Avg price</th><th>Listings</th><th>Change vs prev. fortnight</th></tr>
+      </thead>
+      <tbody>
+        <% table.forEach((r) => { %>
+          <tr>
+            <td><strong><%= config.CROP_EMOJI[r.crop] || '🌾' %> <%= r.crop %></strong></td>
+            <td><strong>₹<%= r.price %></strong></td>
+            <td><%= r.listings %></td>
+            <td>
+              <% if (r.hasBase && r.change !== null) { %>
+                <% if (r.change > 0) { %>
+                  <span class="trend up">▲ <%= r.change %>%</span>
+                <% } else if (r.change < 0) { %>
+                  <span class="trend down">▼ <%= Math.abs(r.change) %>%</span>
+                <% } else { %>
+                  <span class="trend flat">— 0%</span>
+                <% } %>
+              <% } else { %>
+                <span class="muted">not enough data</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%
+  const chartJs = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script><script src="/js/charts.js"></script>';
+%>
+<%- include('partials/footer', { extraScript: chartJs }) %>

@@ -1,0 +1,120 @@
+<%- include('../partials/header') %>
+
+<div class="page-head">
+  <h1><%= listing ? 'Edit crop listing' : 'Post a new crop listing' %></h1>
+  <p>All listings share one structured format — that's what makes the district market searchable and comparable.</p>
+</div>
+
+<% if (listing && listing.status !== 'active') { %>
+  <div class="notice notice-warn">
+    ⚠️ This listing is currently marked <strong><%= listing.status %></strong>. Save it to keep it as is, or mark it available from your dashboard.
+  </div>
+<% } %>
+
+<%
+  const l = listing || {};
+  const v = (k) => (l[k] !== undefined && l[k] !== null ? String(l[k]) : '');
+%>
+
+<form method="post"
+      action="<%= listing ? '/farmer/listings/' + listing.id + '?_method=PUT' : '/farmer/listings' %>"
+      class="card form form-card" novalidate>
+
+  <div class="form-grid">
+    <div class="field">
+      <label for="crop">Crop *</label>
+      <select id="crop" name="crop" required>
+        <option value="">— Select crop —</option>
+        <% config.CROPS.forEach((c) => { %>
+          <option value="<%= c %>" <%= v('crop') === c ? 'selected' : '' %>><%= config.CROP_EMOJI[c] || '🌾' %> <%= c %></option>
+        <% }) %>
+      </select>
+      <% if (errors.crop) { %><p class="field-error"><%= errors.crop %></p><% } %>
+    </div>
+
+    <div class="field">
+      <label for="variety">Variety *</label>
+      <input type="text" id="variety" name="variety" value="<%= v('variety') %>" placeholder="e.g. Desi, Hybrid, Bellary Red…" required>
+      <% if (errors.variety) { %><p class="field-error"><%= errors.variety %></p><% } %>
+    </div>
+
+    <div class="field">
+      <label for="quantity">Quantity *</label>
+      <input type="number" id="quantity" name="quantity" min="0.5" step="0.5" value="<%= v('quantity') %>" placeholder="e.g. 500" required>
+      <% if (errors.quantity) { %><p class="field-error"><%= errors.quantity %></p><% } %>
+    </div>
+
+    <div class="field">
+      <label for="unit">Unit *</label>
+      <select id="unit" name="unit" required>
+        <option value="">— Unit —</option>
+        <% config.UNITS.forEach((u) => { %>
+          <option value="<%= u %>" <%= v('unit') === u ? 'selected' : '' %>><%= u %></option>
+        <% }) %>
+      </select>
+      <% if (errors.unit) { %><p class="field-error"><%= errors.unit %></p><% } %>
+    </div>
+
+    <div class="field">
+      <label for="price">Price (₹) *</label>
+      <input type="number" id="price" name="price" min="0" step="0.5" value="<%= v('price') %>" placeholder="e.g. 25" required>
+      <% if (errors.price) { %><p class="field-error"><%= errors.price %></p><% } %>
+    </div>
+
+    <div class="field">
+      <label for="priceUnit">Price per *</label>
+      <select id="priceUnit" name="priceUnit" required>
+        <option value="">— Price unit —</option>
+        <% config.PRICE_UNITS.forEach((p) => { %>
+          <option value="<%= p %>" <%= v('priceUnit') === p ? 'selected' : '' %>><%= p %></option>
+        <% }) %>
+      </select>
+      <% if (errors.priceUnit) { %><p class="field-error"><%= errors.priceUnit %></p><% } %>
+    </div>
+
+    <div class="field">
+      <label for="quality">Quality grade *</label>
+      <select id="quality" name="quality" required>
+        <option value="">— Grade —</option>
+        <% config.QUALITIES.forEach((qg) => { %>
+          <option value="<%= qg %>" <%= v('quality') === qg ? 'selected' : '' %>><%= qg %></option>
+        <% }) %>
+      </select>
+      <% if (errors.quality) { %><p class="field-error"><%= errors.quality %></p><% } %>
+    </div>
+
+    <div class="field">
+      <label for="location">Pickup location (village) *</label>
+      <input type="text" id="location" name="location" value="<%= v('location') %>" placeholder="e.g. Andipalem" required list="village-list">
+      <datalist id="village-list">
+        <% config.VILLAGES.forEach((vl) => { %><option value="<%= vl %>"><% }) %>
+      </datalist>
+      <% if (errors.location) { %><p class="field-error"><%= errors.location %></p><% } %>
+    </div>
+
+    <div class="field">
+      <label for="harvestDate">Harvest date</label>
+      <input type="date" id="harvestDate" name="harvestDate" value="<%= v('harvestDate') %>">
+    </div>
+
+    <div class="field">
+      <label for="availableDate">Available from *</label>
+      <input type="date" id="availableDate" name="availableDate" value="<%= v('availableDate') %>" required>
+      <% if (errors.availableDate) { %><p class="field-error"><%= errors.availableDate %></p><% } %>
+    </div>
+
+    <div class="field field-full">
+      <label for="notes">Notes (optional)</label>
+      <textarea id="notes" name="notes" rows="3" placeholder="e.g. Fresh harvest, immediate delivery possible, can arrange packing…"><%= v('notes') %></textarea>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <a href="<%= listing ? '/farmer/dashboard' : '/' %>" class="btn btn-ghost">Cancel</a>
+    <button type="submit" class="btn btn-primary btn-lg">
+      <%= listing ? '💾 Save changes' : '🚀 Publish listing' %>
+    </button>
+  </div>
+</form>
+
+<%- include('../partials/footer') %>

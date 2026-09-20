@@ -1,0 +1,51 @@
+<%#
+  listingCard.ejs
+  Renders one crop listing card.
+  Expects: listing (with farmerName, farmerVillage), optional compact flag.
+%>
+<%
+  const emoji = config.CROP_EMOJI[listing.crop] || '🌾';
+  const fmtQty = (l) => Number(l.quantity).toLocaleString('en-IN') + ' ' + l.unit;
+  const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+%>
+<article class="card listing-card <%= listing.status !== 'active' ? 'listing-inactive' : '' %>">
+  <div class="listing-top">
+    <span class="crop-emoji" aria-hidden="true"><%= emoji %></span>
+    <div class="listing-title">
+      <h3 class="crop-name"><%= listing.crop %></h3>
+      <p class="crop-variety"><%= listing.variety || listing.quality %></p>
+    </div>
+    <span class="badge badge-quality badge-<%= listing.quality.toLowerCase().replace(' ', '-') %>"><%= listing.quality %></span>
+  </div>
+
+  <div class="listing-meta">
+    <span title="Farmer">👨‍🌾 <%= listing.farmerName %></span>
+    <span title="Pickup location">📍 <%= listing.location %></span>
+    <span title="Available from">📅 <%= fmtDate(listing.availableDate) %></span>
+  </div>
+
+  <div class="listing-bottom">
+    <div class="price-block">
+      <strong class="price"><%= '₹' + Number(listing.price).toLocaleString('en-IN') %></strong>
+      <span class="price-unit">/ <%= listing.priceUnit.replace('per ', '') %></span>
+      <span class="qty"><%= fmtQty(listing) %></span>
+    </div>
+    <div class="card-actions">
+      <% if (currentUser && currentUser.role === 'buyer') { %>
+        <%
+          const isFav = typeof favMap !== 'undefined' && favMap && favMap[listing.id];
+        %>
+        <form method="post" action="/listings/<%= listing.id %>/favorite">
+          <button class="btn btn-fav <%= isFav ? 'is-fav' : '' %>" type="submit" title="<%= isFav ? 'Remove from saved' : 'Save this listing' %>">
+            <%= isFav ? '♥' : '♡' %>
+          </button>
+        </form>
+      <% } %>
+      <a class="btn btn-outline btn-sm" href="/listings/<%= listing.id %>">View details</a>
+    </div>
+  </div>
+
+  <% if (listing.status !== 'active') { %>
+    <span class="status-ribbon status-<%= listing.status %>"><%= listing.status %></span>
+  <% } %>
+</article>

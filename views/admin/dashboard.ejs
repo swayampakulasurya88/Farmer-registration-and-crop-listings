@@ -1,0 +1,119 @@
+<%- include('../partials/header') %>
+
+<div class="page-head dash-head">
+  <div>
+    <h1>🛡️ District admin panel</h1>
+    <p class="muted">Overview &amp; moderation for <%= config.DISTRICT %> · CSV export for reports</p>
+  </div>
+  <a href="/admin/export" class="btn btn-outline btn-lg">⬇️ Export listings (CSV)</a>
+</div>
+
+<div class="dash-stats">
+  <div class="stat-card stat-card-plain">
+    <span class="stat-num"><%= stats.farmers %></span>
+    <span class="stat-label">Farmers</span>
+  </div>
+  <div class="stat-card stat-card-plain">
+    <span class="stat-num"><%= stats.buyers %></span>
+    <span class="stat-label">Buyers</span>
+  </div>
+  <div class="stat-card stat-card-plain">
+    <span class="stat-num"><%= stats.activeListings %></span>
+    <span class="stat-label">Active listings</span>
+  </div>
+  <div class="stat-card stat-card-plain">
+    <span class="stat-num"><%= stats.interests %></span>
+    <span class="stat-label">Interests exchanged</span>
+  </div>
+</div>
+
+<!-- ============ Users ============ -->
+<div class="card mt">
+  <h3>👥 Registered users</h3>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th><th>Email</th><th>Role</th><th>Village</th><th>Contact</th><th>Joined</th><th>Status</th><th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach((u) => { %>
+          <tr class="<%= u.active === false ? 'row-inactive' : '' %>">
+            <td><strong><%= u.name %></strong><% if (u.businessType) { %><br><span class="muted small"><%= u.businessType %></span><% } %></td>
+            <td><%= u.email %></td>
+            <td><span class="badge badge-<%= u.role %>"><%= u.role %></span></td>
+            <td><%= u.village %></td>
+            <td><%= u.contact || u.phone %></td>
+            <td class="small"><%= new Date(u.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
+            <td><span class="badge badge-status <%= u.active === false ? 'badge-sold' : 'badge-active' %>"><%= u.active === false ? 'disabled' : 'active' %></span></td>
+            <td>
+              <% if (u.id !== currentUser.id) { %>
+                <form method="post" action="/admin/users/<%= u.id %>/<%= u.active === false ? 'activate' : 'deactivate' %>" class="inline-form" data-confirm="<%= u.active === false ? 'Reactivate this account?' : 'Deactivate this account? Their listings will be hidden.' %>">
+                  <button class="btn btn-ghost btn-sm" type="submit"><%= u.active === false ? '↺ Activate' : '⏸ Deactivate' %></button>
+                </form>
+              <% } else { %>
+                <span class="muted small">you</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============ Listings ============ -->
+<div class="card mt">
+  <h3>📋 Latest listings (<%= listings.length %> shown)</h3>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Crop</th><th>Farmer</th><th>Quantity</th><th>Price</th><th>Quality</th><th>Location</th><th>Status</th><th>Posted</th><th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% listings.forEach((l) => { %>
+          <tr>
+            <td><strong><%= l.crop %></strong><% if (l.variety) { %><br><span class="muted small"><%= l.variety %></span><% } %></td>
+            <td><%= l.farmerName %></td>
+            <td><%= Number(l.quantity).toLocaleString('en-IN') %> <%= l.unit %></td>
+            <td>₹<%= Number(l.price).toLocaleString('en-IN') %>/<%= l.priceUnit.replace('per ', '') %></td>
+            <td><span class="badge badge-quality badge-<%= l.quality.toLowerCase().replace(' ', '-') %>"><%= l.quality %></span></td>
+            <td><%= l.location %></td>
+            <td><span class="badge badge-status badge-<%= l.status %>"><%= l.status %></span></td>
+            <td class="small"><%= new Date(l.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) %></td>
+            <td>
+              <div class="row-actions">
+                <a class="btn btn-ghost btn-sm" href="/listings/<%= l.id %>">View</a>
+                <form method="post" action="/admin/listings/<%= l.id %>/remove" class="inline-form" data-confirm="Remove this listing permanently?">
+                  <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============ Volume summary ============ -->
+<% if (volume.length) { %>
+<div class="card mt">
+  <h3>📦 Total listed volume by crop</h3>
+  <div class="table-wrap">
+    <table class="table table-narrow">
+      <thead><tr><th>Crop</th><th>Volume (kg)</th></tr></thead>
+      <tbody>
+        <% volume.forEach((v) => { %>
+          <tr><td><strong><%= config.CROP_EMOJI[v.crop] || '🌾' %> <%= v.crop %></strong></td><td><%= v.volumeKg.toLocaleString('en-IN') %></td></tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<% } %>
+
+<%- include('../partials/footer') %>

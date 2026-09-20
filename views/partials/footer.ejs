@@ -1,0 +1,31 @@
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h4>🌾 KrishiSetu</h4>
+      <p>A shared, structured record of crop availability and prices for farmers and buyers of <%= config.DISTRICT %>.</p>
+    </div>
+    <div>
+      <h4>Quick links</h4>
+      <ul>
+        <li><a href="/listings">Browse listings</a></li>
+        <li><a href="/trends">Price trends</a></li>
+        <li><a href="/auth/register">Register</a></li>
+        <li><a href="/auth/login">Login</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Helpline</h4>
+      <p>District Agriculture Office<br>☎ 0866-2470000<br>✉ support@krishisetu.gov.in</p>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>© <%= new Date().getFullYear() %> KrishiSetu · <%= config.DISTRICT %>, <%= config.STATE %> · Built with Node.js &amp; Express</p>
+  </div>
+</footer>
+
+<script src="/js/main.js"></script>
+<%- typeof extraScript !== 'undefined' ? extraScript : '' %>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<%- include('../partials/header') %>
+
+<%
+  const emoji = config.CROP_EMOJI[listing.crop] || '🌾';
+%>
+
+<nav class="breadcrumb">
+  <a href="/">Home</a> › <a href="/listings">Listings</a> › <span><%= listing.crop %></span>
+</nav>
+
+<div class="detail-grid">
+  <!-- ============ Main card ============ -->
+  <div class="card detail-main">
+    <div class="detail-head">
+      <span class="crop-emoji crop-emoji-lg"><%= emoji %></span>
+      <div>
+        <h1><%= listing.crop %></h1>
+        <p class="crop-variety"><%= listing.variety || '—' %> · <%= listing.quality %> quality</p>
+      </div>
+      <span class="badge badge-status badge-<%= listing.status %>"><%= listing.status %></span>
+    </div>
+
+    <div class="detail-price">
+      <span class="price">₹<%= Number(listing.price).toLocaleString('en-IN') %></span>
+      <span class="price-unit">/ <%= listing.priceUnit.replace('per ', '') %></span>
+      <span class="qty">· <%= Number(listing.quantity).toLocaleString('en-IN') %> <%= listing.unit %></span>
+    </div>
+
+    <dl class="detail-facts">
+      <div><dt>👨‍🌾 Farmer</dt><dd><%= listing.farmerName %></dd></div>
+      <div><dt>📍 Pickup village</dt><dd><%= listing.location %></dd></div>
+      <div><dt>🗺️ District</dt><dd><%= listing.district %></dd></div>
+      <div><dt>🔬 Quality grade</dt><dd><%= listing.quality %></dd></div>
+      <div><dt>🌱 Harvest date</dt><dd><%= listing.harvestDate ? new Date(listing.harvestDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—' %></dd></div>
+      <div><dt>📦 Available from</dt><dd><%= new Date(listing.availableDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></dd></div>
+      <div><dt>🗒️ Posted on</dt><dd><%= new Date(listing.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></dd></div>
+      <% if (listing.notes) { %><div class="facts-notes"><dt>📝 Notes</dt><dd><%= listing.notes %></dd></div><% } %>
+    </dl>
+  </div>
+
+  <!-- ============ Sidebar: contact / actions ============ -->
+  <aside class="detail-side">
+    <% if (currentUser) { %>
+      <% if (isOwner) { %>
+        <div class="card side-card">
+          <h3>This is your listing</h3>
+          <a href="/farmer/listings/<%= listing.id %>/edit" class="btn btn-outline btn-block">✏️ Edit listing</a>
+          <form method="post" action="/farmer/listings/<%= listing.id %>/status" class="mt">
+            <button class="btn btn-ghost btn-block" type="submit">
+              <%= listing.status === 'active' ? '✔ Mark as sold' : '↺ Mark available again' %>
+            </button>
+          </form>
+          <form method="post" action="/farmer/listings/<%= listing.id %>?_method=DELETE" class="mt" data-confirm="Delete this listing permanently?">
+            <button class="btn btn-danger btn-block" type="submit">🗑 Delete listing</button>
+          </form>
+        </div>
+      <% } else if (listing.status === 'active') { %>
+        <div class="card side-card">
+          <h3>Contact the farmer</h3>
+          <p class="muted">You can now see the farmer's direct details — no middlemen.</p>
+
+          <dl class="contact-list">
+            <div><dt>📞 Phone</dt><dd><%= listing.farmerContact %></dd></div>
+            <div><dt>📍 Village</dt><dd><%= listing.farmerVillage %></dd></div>
+            <div><dt>👨‍🌾 Name</dt><dd><%= listing.farmerName %></dd></div>
+          </dl>
+
+          <% if (currentUser.role === 'buyer') { %>
+            <form method="post" action="/listings/<%= listing.id %>/favorite" class="mt">
+              <button class="btn <%= fav ? 'btn-primary' : 'btn-outline' %> btn-block" type="submit">
+                <%= fav ? '♥ Saved to your list' : '♡ Save this listing' %>
+              </button>
+            </form>
+
+            <% if (alreadyInterested) { %>
+              <div class="notice notice-success mt">
+                ✅ You have already expressed interest. The farmer can see your contact details.
+              </div>
+            <% } else { %>
+              <form method="post" action="/listings/<%= listing.id %>/interest" class="mt">
+                <label for="interest-msg" class="field-label">Message to the farmer (optional)</label>
+                <textarea id="interest-msg" name="message" rows="3" placeholder="e.g. Need 500 kg weekly. Best rate for bulk?"></textarea>
+                <button class="btn btn-primary btn-block mt" type="submit">📩 Express interest</button>
+              </form>
+            <% } %>
+          <% } else { %>
+            <div class="notice mt">As the account holder you can see contact details. Use it to reach out directly.</div>
+          <% } %>
+        </div>
+      <% } else { %>
+        <div class="card side-card">
+          <h3>Sold out</h3>
+          <p class="muted">This listing has been marked as sold by the farmer.</p>
+        </div>
+      <% } %>
+    <% } else { %>
+      <div class="card side-card">
+        <h3>See full details</h3>
+        <p class="muted">Log in as a farmer or buyer to see the farmer's contact details and express interest.</p>
+        <a href="/auth/login?next=/listings/<%= listing.id %>" class="btn btn-primary btn-block">Login</a>
+        <a href="/auth/register" class="btn btn-ghost btn-block mt">Create a free account</a>
+      </div>
+    <% } %>
+
+    <div class="card side-card side-rule">
+      <h4>☝️ Fair-trade tip</h4>
+      <p class="muted">Prices are farmer-quoted. Always agree on quantity, quality and loading terms before finalising a deal.</p>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ Related ============ -->
+<% if (related.length) { %>
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">More <%= listing.crop %> listings</h2>
+    <div class="grid-listings">
+      <% related.forEach((l) => { %>
+        <%- include('../partials/listingCard', { listing: l }) %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('../partials/footer') %>

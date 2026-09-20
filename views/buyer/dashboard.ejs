@@ -1,0 +1,85 @@
+<%- include('../partials/header') %>
+
+<div class="page-head dash-head">
+  <div>
+    <h1>🛒 <%= buyer.name %>'s dashboard</h1>
+    <p class="muted"><%= buyer.village %> · <%= buyer.businessType %></p>
+  </div>
+  <a href="/listings" class="btn btn-primary btn-lg">🔍 Search crops</a>
+</div>
+
+<%
+  const favMap = {};
+  favorites.forEach((l) => { favMap[l.id] = true; });
+%>
+
+<div class="two-col">
+  <!-- ============ Saved listings ============ -->
+  <section class="col">
+    <h2>♥ Saved listings (<%= favorites.length %>)</h2>
+    <% if (favorites.length) { %>
+      <div class="stack">
+        <% favorites.forEach((l) => { %>
+          <div class="card row-card">
+            <span class="crop-emoji"><%= config.CROP_EMOJI[l.crop] || '🌾' %></span>
+            <div class="row-main">
+              <strong class="crop-name"><%= l.crop %> <span class="muted">· <%= l.variety %></span></strong>
+              <span class="muted small">
+                <%= Number(l.quantity).toLocaleString('en-IN') %> <%= l.unit %> ·
+                ₹<%= Number(l.price).toLocaleString('en-IN') %>/<%= l.priceUnit.replace('per ', '') %> ·
+                <%= l.location %>
+              </span>
+            </div>
+            <span class="badge badge-status badge-<%= l.status %>"><%= l.status %></span>
+            <div class="row-actions">
+              <a class="btn btn-outline btn-sm" href="/listings/<%= l.id %>">View</a>
+              <form method="post" action="/listings/<%= l.id %>/favorite" class="inline-form">
+                <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <p>No saved listings yet. Tap <strong>♡</strong> on any listing to save it here for quick follow-up.</p>
+      </div>
+    <% } %>
+  </section>
+
+  <!-- ============ Interests sent ============ -->
+  <section class="col">
+    <h2>📩 Interests sent (<%= interests.length %>)</h2>
+    <% if (interests.length) { %>
+      <div class="stack">
+        <% interests.forEach(({ interest, listing }) => { %>
+          <% if (!listing) return; %>
+          <div class="card interest-card">
+            <div class="interest-head">
+              <strong>🌾 <%= listing.crop %> · <%= listing.farmerName %></strong>
+              <span class="muted small"><%= new Date(interest.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) %></span>
+            </div>
+            <p class="small muted">
+              ₹<%= listing.price %>/<%= listing.priceUnit.replace('per ', '') %> ·
+              <%= Number(listing.quantity).toLocaleString('en-IN') %> <%= listing.unit %> ·
+              📍 <%= listing.location %>
+            </p>
+            <% if (interest.message) { %><blockquote class="interest-msg">“<%= interest.message %>”</blockquote><% } %>
+            <div class="small">
+              <span class="badge badge-status badge-<%= listing.status %>"><%= listing.status %></span>
+              <% if (listing.farmerContact) { %>
+                <span class="muted">· 📞 <%= listing.farmerContact %> (shared with farmer)</span>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <p>Send your first interest from any listing page — the farmer will see your contact details on their dashboard.</p>
+      </div>
+    <% } %>
+  </section>
+</div>
+
+<%- include('../partials/footer') %>
