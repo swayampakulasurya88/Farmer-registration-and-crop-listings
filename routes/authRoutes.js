@@ -72,14 +72,14 @@ router.get('/auth/login', (req, res) => {
 });
 
 router.post('/auth/login', (req, res) => {
-  const { email, password } = req.body;
-  const user = db.findUserByEmail(email);
+  const { login, password } = req.body;
+  const user = db.findUserByLogin(login);
 
   const fail = () =>
     res.status(401).render('auth/login', {
       title: 'Login',
-      form: { email },
-      fieldErrors: { email: 'Invalid email or password.' },
+      form: { login },
+      fieldErrors: { login: 'Invalid login or password.' },
     });
 
   if (!user) return fail();
@@ -87,8 +87,8 @@ router.post('/auth/login', (req, res) => {
   if (user.active === false) {
     return res.status(403).render('auth/login', {
       title: 'Login',
-      form: { email },
-      fieldErrors: { email: 'Your account has been deactivated. Contact the district administrator.' },
+      form: { login },
+      fieldErrors: { login: 'Your account has been deactivated. Contact the district administrator.' },
     });
   }
 
@@ -99,7 +99,7 @@ router.post('/auth/login', (req, res) => {
     buyer: '/buyer/dashboard',
     admin: '/admin',
   };
-  return res.redirect((homes[user.role] || '/') + '?msg=Welcome+back,+' + encodeURIComponent(user.name.split(' ')[0]) + '!');
+  return res.redirect((homes[user.role] || '/') + '?msg=' + encodeURIComponent('Welcome back, ' + user.name.split(' ')[0] + '!'));
 });
 
 /* ----------------------------- Logout ------------------------------ */

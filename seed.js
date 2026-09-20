@@ -20,17 +20,32 @@ function daysAgo(n) {
 
 function buildDemoStore() {
   // ---- Users ---------------------------------------------------------
-  const admin = {
-    id: 'u_admin',
-    name: 'District Agriculture Officer',
-    email: 'admin@krishisetu.gov',
-    passwordHash: hash('admin123'),
-    role: 'admin',
-    village: 'Vijayawada',
-    phone: '0866-2470000',
-    active: true,
-    createdAt: daysAgo(60),
-  };
+  const admins = [
+    {
+      id: 'u_admin',
+      name: 'District Agriculture Officer',
+      email: 'admin@krishisetu.gov',
+      username: 'DISTRICT_ADMIN',
+      passwordHash: hash('admin123'),
+      role: 'admin',
+      village: 'Vijayawada',
+      phone: '0866-2470000',
+      active: true,
+      createdAt: daysAgo(60),
+    },
+    {
+      id: 'u_admin2',
+      name: 'Surya S',
+      email: 'suryas@krishisetu.gov',
+      username: 'SURYAS',
+      passwordHash: hash('SURYAS2007'),
+      role: 'admin',
+      village: 'Vijayawada',
+      phone: '0866-2471111',
+      active: true,
+      createdAt: daysAgo(10),
+    },
+  ];
 
   const farmers = [
     {
@@ -138,7 +153,7 @@ function buildDemoStore() {
     { id: 'f_3', buyerId: 'u_b2', listingId: 'l_7', createdAt: daysAgo(2) },
   ];
 
-  return { users: [admin, ...farmers, ...buyers], listings, interests, favorites };
+  return { users: [...admins, ...farmers, ...buyers], listings, interests, favorites };
 }
 
 // Writes a fresh demo store (used by `npm run seed`).
@@ -164,7 +179,8 @@ if (require.main === module) {
     '| Interests:', store.interests.length,
     '| Favorites:', store.favorites.length);
   console.log('\n   Login credentials:');
-  console.log('   Admin : admin@krishisetu.gov / admin123');
+  console.log('   Admin : admin@krishisetu.gov / admin123        (or username DISTRICT_ADMIN)');
+  console.log('   Admin : suryas@krishisetu.gov / SURYAS2007     (or username SURYAS)');
   console.log('   Farmer: ramesh@demo.in / farmer123');
   console.log('   Buyer : buyer@demo.in / buyer123');
 }

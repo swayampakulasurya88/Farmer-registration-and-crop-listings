@@ -57,6 +57,18 @@ function findUserByEmail(email) {
   return load().users.find((u) => u.email.toLowerCase() === needle) || null;
 }
 
+// Login accepts either an email address or a username (case-insensitive).
+function findUserByLogin(login) {
+  const needle = String(login || '').trim().toLowerCase();
+  return (
+    load().users.find(
+      (u) =>
+        u.email.toLowerCase() === needle ||
+        (u.username && u.username.toLowerCase() === needle)
+    ) || null
+  );
+}
+
 function addUser(user) {
   const store = load();
   user.id = genId('u');
@@ -196,6 +208,7 @@ module.exports = {
   getUsers,
   findUserById,
   findUserByEmail,
+  findUserByLogin,
   addUser,
   updateUser,
   countUsersByRole,

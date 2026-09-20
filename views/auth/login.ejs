@@ -10,9 +10,9 @@
 
     <form method="post" action="/auth/login" class="form" novalidate>
       <div class="field">
-        <label for="email">Email address</label>
-        <input type="email" id="email" name="email" value="<%= form.email || '' %>" placeholder="you@example.com" required autofocus>
-        <% if (fieldErrors.email) { %><p class="field-error"><%= fieldErrors.email %></p><% } %>
+        <label for="login">Email address or username</label>
+        <input type="text" id="login" name="login" value="<%= form.login || '' %>" placeholder="you@example.com or SURYAS" required autofocus>
+        <% if (fieldErrors.login) { %><p class="field-error"><%= fieldErrors.login %></p><% } %>
       </div>
 
       <div class="field">
@@ -30,7 +30,8 @@
       <ul>
         <li><strong>Farmer:</strong> ramesh@demo.in / farmer123</li>
         <li><strong>Buyer:</strong> buyer@demo.in / buyer123</li>
-        <li><strong>Admin:</strong> admin@krishisetu.gov / admin123</li>
+        <li><strong>Admin 1:</strong> admin@krishisetu.gov / admin123</li>
+        <li><strong>Admin 2:</strong> suryas@krishisetu.gov / SURYAS2007 (username <b>SURYAS</b>)</li>
       </ul>
     </details>
   </div>

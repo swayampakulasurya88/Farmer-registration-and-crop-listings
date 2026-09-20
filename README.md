@@ -29,11 +29,14 @@ Open **http://localhost:3000**
 
 ### Demo accounts
 
-| Role   | Email                  | Password    |
-|--------|------------------------|-------------|
-| Admin  | admin@krishisetu.gov   | admin123    |
-| Farmer | ramesh@demo.in         | farmer123   |
-| Buyer  | buyer@demo.in          | buyer123    |
+| Role    | Email / Username          | Password    |
+|---------|---------------------------|-------------|
+| Admin   | `admin@krishisetu.gov` or `DISTRICT_ADMIN` | admin123 |
+| Admin   | `suryas@krishisetu.gov` or **`SURYAS`** | SURYAS2007 |
+| Farmer  | ramesh@demo.in            | farmer123   |
+| Buyer   | buyer@demo.in             | buyer123    |
+
+> Log in with **either your email address or your username** (case-insensitive).
 
 ---
 
