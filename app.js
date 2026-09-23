@@ -11,6 +11,7 @@ const methodOverride = require('method-override');
 
 const config = require('./config');
 const { attachUser } = require('./middleware/auth');
+const { attachLang } = require('./utils/i18n');
 const bus = require('./utils/bus');
 const pg = require('./database/pg');
 const fb = require('./database/firebase');
@@ -43,6 +44,10 @@ app.use(
 
 // Load the logged-in user (if any) for every request.
 app.use(attachUser);
+
+// Language (English / తెలుగు / हिन्दी): resolves the active language from
+// ?lang= → session → cookie → browser, and exposes `t()` to all templates.
+app.use(attachLang);
 
 // Make site config (district, crops, villages, ...) available in all views.
 app.use((req, res, next) => {

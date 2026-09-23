@@ -4,30 +4,27 @@
 <section class="hero">
   <div class="container hero-inner">
     <div class="hero-copy">
-      <p class="hero-kicker">🌾 <%= config.DISTRICT %> · One shared platform</p>
-      <h1>Every crop. Every price.<br>Every farmer &amp; buyer — <span>together.</span></h1>
-      <p class="hero-sub">
-        Farmers post structured listings of what they grow and at what price.
-        Buyers search, compare and connect — no more word of mouth or scattered WhatsApp groups.
-      </p>
+      <p class="hero-kicker">🌾 <%= config.DISTRICT %> · <%= t('hero.kicker') %></p>
+      <h1><%= t('hero.title1') %><br><%= t('hero.title2') %> <span><%= t('hero.title3') %></span></h1>
+      <p class="hero-sub"><%= t('hero.sub') %></p>
       <div class="hero-actions">
-        <a href="/listings" class="btn btn-primary btn-lg">🔍 Browse crop listings</a>
-        <a href="/auth/login" class="btn btn-light btn-lg">🚪 Enter — no password</a>
+        <a href="/listings" class="btn btn-primary btn-lg"><%= t('hero.browseBtn') %></a>
+        <a href="/auth/login" class="btn btn-light btn-lg"><%= t('hero.enterBtn') %></a>
       </div>
     </div>
 
     <div class="hero-stats">
       <div class="stat-card">
         <span class="stat-num"><%= stats.farmers %></span>
-        <span class="stat-label">Farmers registered</span>
+        <span class="stat-label"><%= t('stats.farmers') %></span>
       </div>
       <div class="stat-card">
         <span class="stat-num"><%= stats.buyers %></span>
-        <span class="stat-label">Buyers registered</span>
+        <span class="stat-label"><%= t('stats.buyers') %></span>
       </div>
       <div class="stat-card">
         <span class="stat-num"><%= stats.activeListings %></span>
-        <span class="stat-label">Live crop listings</span>
+        <span class="stat-label"><%= t('stats.listings') %></span>
       </div>
     </div>
   </div>
@@ -36,22 +33,22 @@
 <!-- ================= How it works ================= -->
 <section class="section">
   <div class="container">
-    <h2 class="section-title">How it works</h2>
+    <h2 class="section-title"><%= t('how.title') %></h2>
     <div class="how-grid">
       <div class="how-card">
         <span class="how-num">1</span>
-        <h3>👨‍🌾 Farmer enters &amp; lists</h3>
-        <p>Enter with just your name, mobile and address — no password. Then post your crop, variety, quantity, price, quality and pickup village in one structured form.</p>
+        <h3>👨‍🌾 <%= t('how.s1t') %></h3>
+        <p><%= t('how.s1p') %></p>
       </div>
       <div class="how-card">
         <span class="how-num">2</span>
-        <h3>🔎 Buyer searches &amp; compares</h3>
-        <p>Filter live listings by crop, village, quality and price range. Compare rates across the district instantly.</p>
+        <h3>🔎 <%= t('how.s2t') %></h3>
+        <p><%= t('how.s2p') %></p>
       </div>
       <div class="how-card">
         <span class="how-num">3</span>
-        <h3>🤝 Direct contact, fair price</h3>
-        <p>Express interest or save listings. You get the farmer's details directly — no middlemen, transparent rates.</p>
+        <h3>🤝 <%= t('how.s3t') %></h3>
+        <p><%= t('how.s3p') %></p>
       </div>
     </div>
   </div>
@@ -62,10 +59,10 @@
   <div class="container">
     <div class="section-head">
       <div>
-        <h2 class="section-title">Fresh on the market</h2>
-        <p class="section-sub">Latest structured listings from farmers across the district.</p>
+        <h2 class="section-title"><%= t('home.recentTitle') %></h2>
+        <p class="section-sub"><%= t('home.recentSub') %></p>
       </div>
-      <a href="/listings" class="btn btn-outline btn-sm">View all →</a>
+      <a href="/listings" class="btn btn-outline btn-sm"><%= t('home.viewAll') %></a>
     </div>
 
     <% if (recent.length) { %>
@@ -76,7 +73,7 @@
       </div>
     <% } else { %>
       <div class="empty-state">
-        <p>No listings yet — be the first! <a href="/auth/login">Enter as a farmer</a> and list your crop.</p>
+        <p><%= t('home.noListings') %> <a href="/auth/login"><%= t('home.enterAsFarmer') %></a> <%= t('home.listYourCrop') %></p>
       </div>
     <% } %>
   </div>
@@ -88,16 +85,16 @@
   <div class="container">
     <div class="section-head">
       <div>
-        <h2 class="section-title">Price snapshot — last 14 days</h2>
-        <p class="section-sub">Average quoted rate (₹/kg) from current structured records.</p>
+        <h2 class="section-title"><%= t('home.priceTitle') %></h2>
+        <p class="section-sub"><%= t('home.priceSub') %></p>
       </div>
-      <a href="/trends" class="btn btn-outline btn-sm">Full trends &amp; charts →</a>
+      <a href="/trends" class="btn btn-outline btn-sm"><%= t('home.fullTrends') %></a>
     </div>
 
     <div class="table-wrap">
       <table class="table">
         <thead>
-          <tr><th>Crop</th><th>Avg price (₹/kg)</th><th>Listings</th><th>vs previous fortnight</th></tr>
+          <tr><th><%= t('table.crop') %></th><th><%= t('table.avgPrice') %></th><th><%= t('table.listings') %></th><th><%= t('table.vsPrev') %></th></tr>
         </thead>
         <tbody>
           <% priceTable.forEach((r) => { %>
@@ -115,7 +112,7 @@
                     <span class="trend flat">— 0%</span>
                   <% } %>
                 <% } else { %>
-                  <span class="muted">not enough data</span>
+                  <span class="muted"><%= t('table.notEnough') %></span>
                 <% } %>
               </td>
             </tr>
@@ -131,14 +128,14 @@
 <section class="section cta-banner">
   <div class="container cta-grid">
     <div class="cta-card cta-farmer">
-      <h3>👨‍🌾 I'm a farmer</h3>
-      <p>List your harvest in minutes. Reach every buyer in the district with one structured post.</p>
-      <a href="/farmer/listings/new" class="btn btn-light">Post a crop listing</a>
+      <h3>👨‍🌾 <%= t('cta.farmerT') %></h3>
+      <p><%= t('cta.farmerP') %></p>
+      <a href="/farmer/listings/new" class="btn btn-light"><%= t('cta.farmerBtn') %></a>
     </div>
     <div class="cta-card cta-buyer">
-      <h3>🛒 I'm a buyer</h3>
-      <p>Know what's available and at what price before you travel. Compare and connect directly.</p>
-      <a href="/listings" class="btn btn-primary">Find crops</a>
+      <h3>🛒 <%= t('cta.buyerT') %></h3>
+      <p><%= t('cta.buyerP') %></p>
+      <a href="/listings" class="btn btn-primary"><%= t('cta.buyerBtn') %></a>
     </div>
   </div>
 </section>

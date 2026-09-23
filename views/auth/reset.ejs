@@ -4,46 +4,46 @@
   <div class="auth-card">
     <div class="auth-head">
       <span class="auth-emoji">🔐</span>
-      <h1>Reset admin password</h1>
-      <p>Enter the OTP sent to the admin email, then choose a new password.</p>
+      <h1><%= t('reset.title') %></h1>
+      <p><%= t('reset.sub') %></p>
     </div>
 
     <% if (demoOtp) { %>
       <div class="notice notice-warn">
-        🧪 <strong>DEMO MODE</strong> — your one-time code is:
+        🧪 <strong><%= t('forgot.demoMode') %></strong> — <%= t('forgot.demoNote1') %>
         <span class="otp-display"><%= demoOtp %></span>
       </div>
     <% } %>
 
     <form method="post" action="/auth/reset" class="form" novalidate>
       <div class="field">
-        <label for="login">Admin username or email</label>
+        <label for="login"><%= t('forgot.adminUserOrEmail') %></label>
         <input type="text" id="login" name="login" value="<%= form.login || '' %>" placeholder="SURYAS" required>
         <% if (fieldErrors.login) { %><p class="field-error"><%= fieldErrors.login %></p><% } %>
       </div>
 
       <div class="field">
-        <label for="otp">6-digit OTP</label>
+        <label for="otp"><%= t('reset.otpLabel') %></label>
         <input type="text" id="otp" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="123456" required>
         <% if (fieldErrors.otp) { %><p class="field-error"><%= fieldErrors.otp %></p><% } %>
       </div>
 
       <div class="field">
-        <label for="password">New password (min 6 characters)</label>
+        <label for="password"><%= t('reset.newPass') %></label>
         <input type="password" id="password" name="password" placeholder="••••••••" required>
         <% if (fieldErrors.password) { %><p class="field-error"><%= fieldErrors.password %></p><% } %>
       </div>
 
       <div class="field">
-        <label for="confirm">Confirm new password</label>
+        <label for="confirm"><%= t('reset.confirmPass') %></label>
         <input type="password" id="confirm" name="confirm" placeholder="••••••••" required>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-block btn-lg">🔒 Update password</button>
+      <button type="submit" class="btn btn-primary btn-block btn-lg"><%= t('reset.updatePass') %></button>
     </form>
 
     <p class="auth-foot">
-      <a href="/auth/login">← Back to login</a> · OTP valid for <%= otpTtlMin %> minutes
+      <a href="/auth/login"><%= t('auth.backToLogin') %></a> · <%= t('reset.otpValidFor', { m: otpTtlMin }) %>
     </p>
   </div>
 </div>

@@ -15,13 +15,13 @@
       <h3 class="crop-name"><%= listing.crop %></h3>
       <p class="crop-variety"><%= listing.variety || listing.quality %></p>
     </div>
-    <span class="badge badge-quality badge-<%= listing.quality.toLowerCase().replace(' ', '-') %>"><%= listing.quality %></span>
+    <span class="badge badge-quality badge-<%= listing.quality.toLowerCase().replace(' ', '-') %>"><%= t('quality.' + listing.quality) %></span>
   </div>
 
   <div class="listing-meta">
-    <span title="Farmer">👨‍🌾 <%= listing.farmerName %></span>
-    <span title="Pickup location">📍 <%= listing.location %></span>
-    <span title="Available from">📅 <%= fmtDate(listing.availableDate) %></span>
+    <span title="<%= t('card.farmer') %>">👨‍🌾 <%= listing.farmerName %></span>
+    <span title="<%= t('card.pickup') %>">📍 <%= listing.location %></span>
+    <span title="<%= t('card.available') %>">📅 <%= fmtDate(listing.availableDate) %></span>
   </div>
 
   <div class="listing-bottom">
@@ -36,16 +36,16 @@
           const isFav = typeof favMap !== 'undefined' && favMap && favMap[listing.id];
         %>
         <form method="post" action="/listings/<%= listing.id %>/favorite">
-          <button class="btn btn-fav <%= isFav ? 'is-fav' : '' %>" type="submit" title="<%= isFav ? 'Remove from saved' : 'Save this listing' %>">
+          <button class="btn btn-fav <%= isFav ? 'is-fav' : '' %>" type="submit" title="<%= isFav ? t('card.unsave') : t('card.save') %>">
             <%= isFav ? '♥' : '♡' %>
           </button>
         </form>
       <% } %>
-      <a class="btn btn-outline btn-sm" href="/listings/<%= listing.id %>">View details</a>
+      <a class="btn btn-outline btn-sm" href="/listings/<%= listing.id %>"><%= t('card.viewDetails') %></a>
     </div>
   </div>
 
   <% if (listing.status !== 'active') { %>
-    <span class="status-ribbon status-<%= listing.status %>"><%= listing.status %></span>
+    <span class="status-ribbon status-<%= listing.status %>"><%= t('status.' + listing.status) %></span>
   <% } %>
 </article>

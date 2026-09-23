@@ -1,13 +1,13 @@
 <%- include('../partials/header') %>
 
 <div class="page-head">
-  <h1><%= listing ? 'Edit crop listing' : 'Post a new crop listing' %></h1>
-  <p>All listings share one structured format — that's what makes the district market searchable and comparable.</p>
+  <h1><%= listing ? t('form.editTitle') : t('form.newTitle') %></h1>
+  <p><%= t('form.sub') %></p>
 </div>
 
 <% if (listing && listing.status !== 'active') { %>
   <div class="notice notice-warn">
-    ⚠️ This listing is currently marked <strong><%= listing.status %></strong>. Save it to keep it as is, or mark it available from your dashboard.
+    <%= t('form.warnMarked', { status: t('status.' + listing.status) }) %>
   </div>
 <% } %>
 
@@ -22,9 +22,9 @@
 
   <div class="form-grid">
     <div class="field">
-      <label for="crop">Crop *</label>
+      <label for="crop"><%= t('form.labelCrop') %></label>
       <select id="crop" name="crop" required>
-        <option value="">— Select crop —</option>
+        <option value=""><%= t('form.selectCrop') %></option>
         <% config.CROPS.forEach((c) => { %>
           <option value="<%= c %>" <%= v('crop') === c ? 'selected' : '' %>><%= config.CROP_EMOJI[c] || '🌾' %> <%= c %></option>
         <% }) %>
@@ -33,21 +33,21 @@
     </div>
 
     <div class="field">
-      <label for="variety">Variety *</label>
-      <input type="text" id="variety" name="variety" value="<%= v('variety') %>" placeholder="e.g. Desi, Hybrid, Bellary Red…" required>
+      <label for="variety"><%= t('form.labelVariety') %></label>
+      <input type="text" id="variety" name="variety" value="<%= v('variety') %>" placeholder="<%= t('form.phVariety') %>" required>
       <% if (errors.variety) { %><p class="field-error"><%= errors.variety %></p><% } %>
     </div>
 
     <div class="field">
-      <label for="quantity">Quantity *</label>
+      <label for="quantity"><%= t('form.labelQuantity') %></label>
       <input type="number" id="quantity" name="quantity" min="0.5" step="0.5" value="<%= v('quantity') %>" placeholder="e.g. 500" required>
       <% if (errors.quantity) { %><p class="field-error"><%= errors.quantity %></p><% } %>
     </div>
 
     <div class="field">
-      <label for="unit">Unit *</label>
+      <label for="unit"><%= t('form.labelUnit') %></label>
       <select id="unit" name="unit" required>
-        <option value="">— Unit —</option>
+        <option value=""><%= t('form.unit') %></option>
         <% config.UNITS.forEach((u) => { %>
           <option value="<%= u %>" <%= v('unit') === u ? 'selected' : '' %>><%= u %></option>
         <% }) %>
@@ -56,15 +56,15 @@
     </div>
 
     <div class="field">
-      <label for="price">Price (₹) *</label>
+      <label for="price"><%= t('form.labelPrice') %></label>
       <input type="number" id="price" name="price" min="0" step="0.5" value="<%= v('price') %>" placeholder="e.g. 25" required>
       <% if (errors.price) { %><p class="field-error"><%= errors.price %></p><% } %>
     </div>
 
     <div class="field">
-      <label for="priceUnit">Price per *</label>
+      <label for="priceUnit"><%= t('form.labelPriceUnit') %></label>
       <select id="priceUnit" name="priceUnit" required>
-        <option value="">— Price unit —</option>
+        <option value=""><%= t('form.priceUnit') %></option>
         <% config.PRICE_UNITS.forEach((p) => { %>
           <option value="<%= p %>" <%= v('priceUnit') === p ? 'selected' : '' %>><%= p %></option>
         <% }) %>
@@ -73,19 +73,19 @@
     </div>
 
     <div class="field">
-      <label for="quality">Quality grade *</label>
+      <label for="quality"><%= t('form.labelQuality') %></label>
       <select id="quality" name="quality" required>
-        <option value="">— Grade —</option>
+        <option value=""><%= t('form.grade') %></option>
         <% config.QUALITIES.forEach((qg) => { %>
-          <option value="<%= qg %>" <%= v('quality') === qg ? 'selected' : '' %>><%= qg %></option>
+          <option value="<%= qg %>" <%= v('quality') === qg ? 'selected' : '' %>><%= t('quality.' + qg) %></option>
         <% }) %>
       </select>
       <% if (errors.quality) { %><p class="field-error"><%= errors.quality %></p><% } %>
     </div>
 
     <div class="field">
-      <label for="location">Pickup location (village) *</label>
-      <input type="text" id="location" name="location" value="<%= v('location') %>" placeholder="e.g. Andipalem" required list="village-list">
+      <label for="location"><%= t('form.labelLocation') %></label>
+      <input type="text" id="location" name="location" value="<%= v('location') %>" placeholder="<%= t('form.phLocation') %>" required list="village-list">
       <datalist id="village-list">
         <% config.VILLAGES.forEach((vl) => { %><option value="<%= vl %>"><% }) %>
       </datalist>
@@ -93,26 +93,26 @@
     </div>
 
     <div class="field">
-      <label for="harvestDate">Harvest date</label>
+      <label for="harvestDate"><%= t('form.labelHarvest') %></label>
       <input type="date" id="harvestDate" name="harvestDate" value="<%= v('harvestDate') %>">
     </div>
 
     <div class="field">
-      <label for="availableDate">Available from *</label>
+      <label for="availableDate"><%= t('form.labelAvailable') %></label>
       <input type="date" id="availableDate" name="availableDate" value="<%= v('availableDate') %>" required>
       <% if (errors.availableDate) { %><p class="field-error"><%= errors.availableDate %></p><% } %>
     </div>
 
     <div class="field field-full">
-      <label for="notes">Notes (optional)</label>
-      <textarea id="notes" name="notes" rows="3" placeholder="e.g. Fresh harvest, immediate delivery possible, can arrange packing…"><%= v('notes') %></textarea>
+      <label for="notes"><%= t('form.labelNotes') %></label>
+      <textarea id="notes" name="notes" rows="3" placeholder="<%= t('form.phNotes') %>"><%= v('notes') %></textarea>
     </div>
   </div>
 
   <div class="form-actions">
-    <a href="<%= listing ? '/farmer/dashboard' : '/' %>" class="btn btn-ghost">Cancel</a>
+    <a href="<%= listing ? '/farmer/dashboard' : '/' %>" class="btn btn-ghost"><%= t('form.cancel') %></a>
     <button type="submit" class="btn btn-primary btn-lg">
-      <%= listing ? '💾 Save changes' : '🚀 Publish listing' %>
+      <%= listing ? t('form.save') : t('form.publish') %>
     </button>
   </div>
 </form>

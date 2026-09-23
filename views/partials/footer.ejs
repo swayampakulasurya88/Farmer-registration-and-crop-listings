@@ -4,24 +4,24 @@
   <div class="container footer-grid">
     <div>
       <h4>🌾 KrishiSetu</h4>
-      <p>A shared, structured record of crop availability and prices for farmers and buyers of <%= config.DISTRICT %>.</p>
+      <p><%= t('footer.tagline', { d: config.DISTRICT }) %></p>
     </div>
     <div>
-      <h4>Quick links</h4>
+      <h4><%= t('footer.quickLinks') %></h4>
       <ul>
-        <li><a href="/listings">Browse listings</a></li>
-        <li><a href="/trends">Price trends</a></li>
-        <li><a href="/auth/login">Enter market (no password)</a></li>
-        <li><a href="/auth/login?tab=admin">Admin login</a></li>
+        <li><a href="/listings"><%= t('footer.browseListings') %></a></li>
+        <li><a href="/trends"><%= t('footer.priceTrends') %></a></li>
+        <li><a href="/auth/login"><%= t('footer.enterMarket') %></a></li>
+        <li><a href="/auth/login?tab=admin"><%= t('footer.adminLogin') %></a></li>
       </ul>
     </div>
     <div>
-      <h4>Helpline</h4>
+      <h4><%= t('footer.helpline') %></h4>
       <p>District Agriculture Office<br>☎ 0866-2470000<br>✉ support@krishisetu.gov.in</p>
     </div>
   </div>
   <div class="container footer-bottom">
-    <p>© <%= new Date().getFullYear() %> KrishiSetu · <%= config.DISTRICT %>, <%= config.STATE %> · Built with Node.js &amp; Express</p>
+    <p>© <%= new Date().getFullYear() %> KrishiSetu · <%= config.DISTRICT %>, <%= config.STATE %> · <%= t('footer.builtWith') %></p>
   </div>
 </footer>
 

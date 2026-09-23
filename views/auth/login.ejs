@@ -4,37 +4,34 @@
   <div class="auth-card auth-card-wide">
     <div class="auth-head">
       <span class="auth-emoji">🌾</span>
-      <h1>Welcome to KrishiSetu</h1>
-      <p><%= config.DISTRICT %> — farmers &amp; buyers enter with <strong>name, mobile &amp; address</strong>. No passwords, no usernames.</p>
+      <h1><%= t('auth.welcomeTitle') %></h1>
+      <p><%= config.DISTRICT %> — <strong><%= t('auth.welcomeSub') %></strong></p>
     </div>
 
     <div class="auth-tabs" role="tablist">
-      <button type="button" class="auth-tab <%= tab === 'admin' ? '' : 'active' %>" data-ks-tab="panel-user">👨‍🌾 Farmer / Buyer</button>
-      <button type="button" class="auth-tab <%= tab === 'admin' ? 'active' : '' %>" data-ks-tab="panel-admin">🛡️ Admin login</button>
+      <button type="button" class="auth-tab <%= tab === 'admin' ? '' : 'active' %>" data-ks-tab="panel-user"><%= t('auth.userTab') %></button>
+      <button type="button" class="auth-tab <%= tab === 'admin' ? 'active' : '' %>" data-ks-tab="panel-admin"><%= t('auth.adminTab') %></button>
     </div>
 
     <!-- ================= Farmer / Buyer entry ================= -->
     <section class="auth-panel <%= tab === 'admin' ? 'hidden' : '' %>" id="panel-user">
-      <p class="auth-lead">
-        New here? Your name, mobile &amp; address create your account — the details
-        appear in the admin panel. Returning? Enter the same details and you're in.
-      </p>
+      <p class="auth-lead"><%= t('auth.userLead') %></p>
 
       <form method="post" action="/auth/login" class="form" novalidate>
         <input type="hidden" name="tab" value="user">
 
         <div class="field">
-          <label>I am a…</label>
+          <label><%= t('auth.iAm') %></label>
           <div class="role-picker">
             <label class="role-option <%= form.role === 'buyer' ? '' : 'selected' %>">
               <input type="radio" name="role" value="farmer" <%= form.role === 'buyer' ? '' : 'checked' %>>
-              <strong>👨‍🌾 Farmer</strong>
-              <small>I grow and sell crops</small>
+              <strong><%= t('auth.roleFarmer') %></strong>
+              <small><%= t('auth.roleFarmerSub') %></small>
             </label>
             <label class="role-option <%= form.role === 'buyer' ? 'selected' : '' %>">
               <input type="radio" name="role" value="buyer" <%= form.role === 'buyer' ? 'checked' : '' %>>
-              <strong>🛒 Buyer</strong>
-              <small>I buy crops to trade or use</small>
+              <strong><%= t('auth.roleBuyer') %></strong>
+              <small><%= t('auth.roleBuyerSub') %></small>
             </label>
           </div>
           <% if (fieldErrors.role) { %><p class="field-error"><%= fieldErrors.role %></p><% } %>
@@ -42,19 +39,19 @@
 
         <div class="form-grid">
           <div class="field">
-            <label for="name">Full name</label>
-            <input type="text" id="name" name="name" value="<%= form.name || '' %>" placeholder="e.g. Ramesh Chandra" required autofocus>
+            <label for="name"><%= t('auth.fullName') %></label>
+            <input type="text" id="name" name="name" value="<%= form.name || '' %>" placeholder="<%= t('auth.namePh') %>" required autofocus>
             <% if (fieldErrors.name) { %><p class="field-error"><%= fieldErrors.name %></p><% } %>
           </div>
           <div class="field">
-            <label for="phone">Mobile number</label>
+            <label for="phone"><%= t('auth.mobile') %></label>
             <input type="tel" id="phone" name="phone" value="<%= form.phone || '' %>" placeholder="98765 12345" required>
             <% if (fieldErrors.phone) { %><p class="field-error"><%= fieldErrors.phone %></p><% } %>
           </div>
           <div class="field">
-            <label for="village">Village / town</label>
+            <label for="village"><%= t('auth.village') %></label>
             <select id="village" name="village">
-              <option value="">— Select (optional) —</option>
+              <option value=""><%= t('auth.selectOptional') %></option>
               <% villages.forEach((v) => { %>
                 <option value="<%= v %>" <%= form.village === v ? 'selected' : '' %>><%= v %></option>
               <% }) %>
@@ -62,62 +59,62 @@
             <% if (fieldErrors.village) { %><p class="field-error"><%= fieldErrors.village %></p><% } %>
           </div>
           <div class="field">
-            <label for="address">Address (street / landmark)</label>
-            <input type="text" id="address" name="address" value="<%= form.address || '' %>" placeholder="e.g. 4-56, Main Road, near temple">
+            <label for="address"><%= t('auth.address') %></label>
+            <input type="text" id="address" name="address" value="<%= form.address || '' %>" placeholder="<%= t('auth.addressPh') %>">
             <% if (fieldErrors.address) { %><p class="field-error"><%= fieldErrors.address %></p><% } %>
           </div>
         </div>
 
         <div class="field farmer-only hidden">
-          <label for="landSize">Land size (farmer)</label>
-          <input type="text" id="landSize" name="landSize" value="<%= form.landSize || '' %>" placeholder="e.g. 5 acres">
+          <label for="landSize"><%= t('auth.landSize') %></label>
+          <input type="text" id="landSize" name="landSize" value="<%= form.landSize || '' %>" placeholder="<%= t('auth.landSizePh') %>">
         </div>
 
         <div class="field buyer-only hidden">
-          <label for="businessType">Business type (buyer)</label>
+          <label for="businessType"><%= t('auth.businessType') %></label>
           <select id="businessType" name="businessType">
-            <option value="">— Select —</option>
+            <option value=""><%= t('auth.select') %></option>
             <% businessTypes.forEach((t) => { %>
               <option value="<%= t %>" <%= form.businessType === t ? 'selected' : '' %>><%= t %></option>
             <% }) %>
           </select>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block btn-lg mt">🚪 Enter KrishiSetu</button>
-        <p class="auth-micro">No password. Your mobile number identifies your account.</p>
+        <button type="submit" class="btn btn-primary btn-block btn-lg mt"><%= t('auth.enterBtn') %></button>
+        <p class="auth-micro"><%= t('auth.noPassword') %></p>
       </form>
     </section>
 
     <!-- ================= Admin login ================= -->
     <section class="auth-panel <%= tab === 'admin' ? '' : 'hidden' %>" id="panel-admin">
-      <p class="auth-lead">Only the district administrator logs in with a username &amp; password.</p>
+      <p class="auth-lead"><%= t('auth.adminLead') %></p>
 
       <form method="post" action="/auth/login" class="form" novalidate>
         <input type="hidden" name="tab" value="admin">
 
         <div class="field">
-          <label for="login">Username or email</label>
+          <label for="login"><%= t('auth.userOrEmail') %></label>
           <input type="text" id="login" name="login" value="<%= form.login || '' %>" placeholder="SURYAS" required autofocus>
           <% if (fieldErrors.login) { %><p class="field-error"><%= fieldErrors.login %></p><% } %>
         </div>
 
         <div class="field">
-          <label for="password">Password</label>
+          <label for="password"><%= t('auth.password') %></label>
           <input type="password" id="password" name="password" placeholder="••••••••" required>
         </div>
 
-        <p class="forgot-link"><a href="/auth/forgot">Forgot password?</a></p>
+        <p class="forgot-link"><a href="/auth/forgot"><%= t('auth.forgot') %></a></p>
 
-        <button type="submit" class="btn btn-primary btn-block btn-lg">🛡️ Admin login</button>
+        <button type="submit" class="btn btn-primary btn-block btn-lg"><%= t('auth.adminSubmit') %></button>
       </form>
     </section>
 
     <details class="demo-cred">
-      <summary>Demo accounts (click to reveal)</summary>
+      <summary><%= t('auth.demoTitle') %></summary>
       <ul>
-        <li><strong>Farmer:</strong> Ramesh Chandra · <b>9876512341</b> · Andipalem</li>
-        <li><strong>Buyer:</strong> Sri Sai Traders · <b>9988776655</b> · Vijayawada</li>
-        <li><strong>Admin (only password login):</strong> <b>SURYAS</b> / SURYAS2007</li>
+        <li><strong><%= t('auth.demoFarmer') %>:</strong> Ramesh Chandra · <b>9876512341</b> · Andipalem</li>
+        <li><strong><%= t('auth.demoBuyer') %>:</strong> Sri Sai Traders · <b>9988776655</b> · Vijayawada</li>
+        <li><strong><%= t('auth.demoAdmin') %>:</strong> <b>SURYAS</b> / SURYAS2007</li>
       </ul>
     </details>
   </div>

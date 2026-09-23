@@ -4,26 +4,26 @@
   <div class="card">
     <div class="auth-head" style="text-align:left">
       <span class="auth-emoji">✏️</span>
-      <h1>Edit your details</h1>
-      <p>Your <strong>address</strong> is editable any time — farmers &amp; buyers always see your latest details.</p>
+      <h1><%= t('profile.title') %></h1>
+      <p><%= t('profile.sub') %></p>
     </div>
 
     <form method="post" action="/auth/profile" class="form" novalidate>
       <div class="form-grid">
         <div class="field">
-          <label for="name">Full name</label>
+          <label for="name"><%= t('auth.fullName') %></label>
           <input type="text" id="name" name="name" value="<%= form.name || '' %>" required>
           <% if (fieldErrors.name) { %><p class="field-error"><%= fieldErrors.name %></p><% } %>
         </div>
         <div class="field">
-          <label for="phone">Mobile number</label>
+          <label for="phone"><%= t('auth.mobile') %></label>
           <input type="tel" id="phone" name="phone" value="<%= form.phone || '' %>" required>
           <% if (fieldErrors.phone) { %><p class="field-error"><%= fieldErrors.phone %></p><% } %>
         </div>
         <div class="field">
-          <label for="village">Village / town</label>
+          <label for="village"><%= t('auth.village') %></label>
           <select id="village" name="village">
-            <option value="">— Select —</option>
+            <option value=""><%= t('auth.select') %></option>
             <% villages.forEach((v) => { %>
               <option value="<%= v %>" <%= form.village === v ? 'selected' : '' %>><%= v %></option>
             <% }) %>
@@ -31,27 +31,27 @@
           <% if (fieldErrors.village) { %><p class="field-error"><%= fieldErrors.village %></p><% } %>
         </div>
         <div class="field">
-          <label for="email">Email (optional)</label>
+          <label for="email"><%= t('profile.emailOptional') %></label>
           <input type="email" id="email" name="email" value="<%= form.email || '' %>" placeholder="you@example.com">
           <% if (fieldErrors.email) { %><p class="field-error"><%= fieldErrors.email %></p><% } %>
         </div>
 
         <div class="field field-full">
-          <label for="address">📍 Address (street / landmark — editable)</label>
-          <textarea id="address" name="address" rows="2" placeholder="e.g. 4-56, Main Road, near Hanuman temple"><%= form.address || '' %></textarea>
+          <label for="address"><%= t('profile.addressLabel') %></label>
+          <textarea id="address" name="address" rows="2" placeholder="<%= t('auth.addressPh') %>"><%= form.address || '' %></textarea>
           <% if (fieldErrors.address) { %><p class="field-error"><%= fieldErrors.address %></p><% } %>
         </div>
 
         <% if (currentUser.role === 'farmer') { %>
           <div class="field">
-            <label for="landSize">Land size</label>
-            <input type="text" id="landSize" name="landSize" value="<%= form.landSize || '' %>" placeholder="e.g. 5 acres">
+            <label for="landSize"><%= t('profile.landSize') %></label>
+            <input type="text" id="landSize" name="landSize" value="<%= form.landSize || '' %>" placeholder="<%= t('auth.landSizePh') %>">
           </div>
         <% } else if (currentUser.role === 'buyer') { %>
           <div class="field">
-            <label for="businessType">Business type</label>
+            <label for="businessType"><%= t('profile.businessType') %></label>
             <select id="businessType" name="businessType">
-              <option value="">— Select —</option>
+              <option value=""><%= t('auth.select') %></option>
               <% businessTypes.forEach((t) => { %>
                 <option value="<%= t %>" <%= form.businessType === t ? 'selected' : '' %>><%= t %></option>
               <% }) %>
@@ -61,8 +61,8 @@
       </div>
 
       <div class="form-actions">
-        <a href="/" class="btn btn-ghost">Cancel</a>
-        <button type="submit" class="btn btn-primary">💾 Save changes</button>
+        <a href="/" class="btn btn-ghost"><%= t('profile.cancel') %></a>
+        <button type="submit" class="btn btn-primary"><%= t('profile.save') %></button>
       </div>
     </form>
   </div>

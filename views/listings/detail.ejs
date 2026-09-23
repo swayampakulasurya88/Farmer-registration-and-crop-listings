@@ -5,7 +5,7 @@
 %>
 
 <nav class="breadcrumb">
-  <a href="/">Home</a> › <a href="/listings">Listings</a> › <span><%= listing.crop %></span>
+  <a href="/"><%= t('detail.bcHome') %></a> › <a href="/listings"><%= t('detail.bcListings') %></a> › <span><%= listing.crop %></span>
 </nav>
 
 <div class="detail-grid">
@@ -15,9 +15,9 @@
       <span class="crop-emoji crop-emoji-lg"><%= emoji %></span>
       <div>
         <h1><%= listing.crop %></h1>
-        <p class="crop-variety"><%= listing.variety || '—' %> · <%= listing.quality %> quality</p>
+        <p class="crop-variety"><%= listing.variety || '—' %> · <%= t('quality.' + listing.quality) %></p>
       </div>
-      <span class="badge badge-status badge-<%= listing.status %>"><%= listing.status %></span>
+      <span class="badge badge-status badge-<%= listing.status %>"><%= t('status.' + listing.status) %></span>
     </div>
 
     <div class="detail-price">
@@ -27,14 +27,14 @@
     </div>
 
     <dl class="detail-facts">
-      <div><dt>👨‍🌾 Farmer</dt><dd><%= listing.farmerName %></dd></div>
-      <div><dt>📍 Pickup village</dt><dd><%= listing.location %></dd></div>
-      <div><dt>🗺️ District</dt><dd><%= listing.district %></dd></div>
-      <div><dt>🔬 Quality grade</dt><dd><%= listing.quality %></dd></div>
-      <div><dt>🌱 Harvest date</dt><dd><%= listing.harvestDate ? new Date(listing.harvestDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—' %></dd></div>
-      <div><dt>📦 Available from</dt><dd><%= new Date(listing.availableDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></dd></div>
-      <div><dt>🗒️ Posted on</dt><dd><%= new Date(listing.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></dd></div>
-      <% if (listing.notes) { %><div class="facts-notes"><dt>📝 Notes</dt><dd><%= listing.notes %></dd></div><% } %>
+      <div><dt>👨‍🌾 <%= t('detail.farmer') %></dt><dd><%= listing.farmerName %></dd></div>
+      <div><dt>📍 <%= t('detail.pickupVillage') %></dt><dd><%= listing.location %></dd></div>
+      <div><dt>🗺️ <%= t('detail.district') %></dt><dd><%= listing.district %></dd></div>
+      <div><dt>🔬 <%= t('detail.qualityGrade') %></dt><dd><%= t('quality.' + listing.quality) %></dd></div>
+      <div><dt>🌱 <%= t('detail.harvestDate') %></dt><dd><%= listing.harvestDate ? new Date(listing.harvestDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—' %></dd></div>
+      <div><dt>📦 <%= t('detail.availableFrom') %></dt><dd><%= new Date(listing.availableDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></dd></div>
+      <div><dt>🗒️ <%= t('detail.postedOn') %></dt><dd><%= new Date(listing.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></dd></div>
+      <% if (listing.notes) { %><div class="facts-notes"><dt>📝 <%= t('detail.notes') %></dt><dd><%= listing.notes %></dd></div><% } %>
     </dl>
   </div>
 
@@ -43,67 +43,67 @@
     <% if (currentUser) { %>
       <% if (isOwner) { %>
         <div class="card side-card">
-          <h3>This is your listing</h3>
-          <a href="/farmer/listings/<%= listing.id %>/edit" class="btn btn-outline btn-block">✏️ Edit listing</a>
+          <h3><%= t('detail.yourListing') %></h3>
+          <a href="/farmer/listings/<%= listing.id %>/edit" class="btn btn-outline btn-block"><%= t('detail.editListing') %></a>
           <form method="post" action="/farmer/listings/<%= listing.id %>/status" class="mt">
             <button class="btn btn-ghost btn-block" type="submit">
-              <%= listing.status === 'active' ? '✔ Mark as sold' : '↺ Mark available again' %>
+              <%= listing.status === 'active' ? t('detail.markSold') : t('detail.markAvailable') %>
             </button>
           </form>
-          <form method="post" action="/farmer/listings/<%= listing.id %>?_method=DELETE" class="mt" data-confirm="Delete this listing permanently?">
-            <button class="btn btn-danger btn-block" type="submit">🗑 Delete listing</button>
+          <form method="post" action="/farmer/listings/<%= listing.id %>?_method=DELETE" class="mt" data-confirm="<%= t('detail.deleteConfirm') %>">
+            <button class="btn btn-danger btn-block" type="submit"><%= t('detail.deleteListing') %></button>
           </form>
         </div>
       <% } else if (listing.status === 'active') { %>
         <div class="card side-card">
-          <h3>Contact the farmer</h3>
-          <p class="muted">You can now see the farmer's direct details — no middlemen.</p>
+          <h3><%= t('detail.contactFarmer') %></h3>
+          <p class="muted"><%= t('detail.contactSub') %></p>
 
           <dl class="contact-list">
-            <div><dt>📞 Phone</dt><dd><%= listing.farmerContact %></dd></div>
-            <div><dt>📍 Village</dt><dd><%= listing.farmerVillage %></dd></div>
-            <div><dt>👨‍🌾 Name</dt><dd><%= listing.farmerName %></dd></div>
+            <div><dt>📞 <%= t('detail.phone') %></dt><dd><%= listing.farmerContact %></dd></div>
+            <div><dt>📍 <%= t('detail.village') %></dt><dd><%= listing.farmerVillage %></dd></div>
+            <div><dt>👨‍🌾 <%= t('detail.name') %></dt><dd><%= listing.farmerName %></dd></div>
           </dl>
 
           <% if (currentUser.role === 'buyer') { %>
             <form method="post" action="/listings/<%= listing.id %>/favorite" class="mt">
               <button class="btn <%= fav ? 'btn-primary' : 'btn-outline' %> btn-block" type="submit">
-                <%= fav ? '♥ Saved to your list' : '♡ Save this listing' %>
+                <%= fav ? t('detail.savedListing') : t('detail.saveListing') %>
               </button>
             </form>
 
             <% if (alreadyInterested) { %>
               <div class="notice notice-success mt">
-                ✅ You have already expressed interest. The farmer can see your contact details.
+                <%= t('detail.alreadyInterested') %>
               </div>
             <% } else { %>
               <form method="post" action="/listings/<%= listing.id %>/interest" class="mt">
-                <label for="interest-msg" class="field-label">Message to the farmer (optional)</label>
-                <textarea id="interest-msg" name="message" rows="3" placeholder="e.g. Need 500 kg weekly. Best rate for bulk?"></textarea>
-                <button class="btn btn-primary btn-block mt" type="submit">📩 Express interest</button>
+                <label for="interest-msg" class="field-label"><%= t('detail.interestMsg') %></label>
+                <textarea id="interest-msg" name="message" rows="3" placeholder="<%= t('detail.interestPh') %>"></textarea>
+                <button class="btn btn-primary btn-block mt" type="submit"><%= t('detail.expressInterest') %></button>
               </form>
             <% } %>
           <% } else { %>
-            <div class="notice mt">As the account holder you can see contact details. Use it to reach out directly.</div>
+            <div class="notice mt"><%= t('detail.asHolder') %></div>
           <% } %>
         </div>
       <% } else { %>
         <div class="card side-card">
-          <h3>Sold out</h3>
-          <p class="muted">This listing has been marked as sold by the farmer.</p>
+          <h3><%= t('detail.soldOut') %></h3>
+          <p class="muted"><%= t('detail.soldOutSub') %></p>
         </div>
       <% } %>
     <% } else { %>
       <div class="card side-card">
-        <h3>See full details</h3>
-        <p class="muted">Farmers &amp; buyers see the farmer's contact details and can express interest — just enter your <strong>name, mobile &amp; address</strong>. No password needed.</p>
-        <a href="/auth/login?next=/listings/<%= listing.id %>" class="btn btn-primary btn-block">🚪 Enter now</a>
+        <h3><%= t('detail.seeFull') %></h3>
+        <p class="muted"><%= t('detail.seeFullSub') %></p>
+        <a href="/auth/login?next=/listings/<%= listing.id %>" class="btn btn-primary btn-block"><%= t('detail.enterNow') %></a>
       </div>
     <% } %>
 
     <div class="card side-card side-rule">
-      <h4>☝️ Fair-trade tip</h4>
-      <p class="muted">Prices are farmer-quoted. Always agree on quantity, quality and loading terms before finalising a deal.</p>
+      <h4><%= t('detail.fairTipT') %></h4>
+      <p class="muted"><%= t('detail.fairTipP') %></p>
     </div>
   </aside>
 </div>
@@ -112,7 +112,7 @@
 <% if (related.length) { %>
 <section class="section">
   <div class="container">
-    <h2 class="section-title">More <%= listing.crop %> listings</h2>
+    <h2 class="section-title"><%= t('detail.moreCrops', { crop: listing.crop }) %></h2>
     <div class="grid-listings">
       <% related.forEach((l) => { %>
         <%- include('../partials/listingCard', { listing: l }) %>

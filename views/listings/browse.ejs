@@ -1,63 +1,63 @@
 <%- include('../partials/header') %>
 
 <div class="page-head">
-  <h1>Browse crop listings</h1>
-  <p>Every listing follows one structured format — crop, variety, quantity, price, quality, date &amp; village — so you can filter and compare them fairly. <strong><%= count %></strong> live listing<%= count === 1 ? '' : 's' %> found.</p>
+  <h1><%= t('browse.title') %></h1>
+  <p><%= t('browse.sub') %> <strong><%= t('browse.found', { n: count, s: count === 1 ? '' : 's' }) %></strong></p>
 </div>
 
 <!-- ============ Filter bar ============ -->
 <form method="get" action="/listings" class="filter-bar" id="filter-bar">
   <div class="field">
-    <label>Search</label>
-    <input type="text" name="q" value="<%= filters.q || '' %>" placeholder="crop, variety, village, farmer…">
+    <label><%= t('browse.search') %></label>
+    <input type="text" name="q" value="<%= filters.q || '' %>" placeholder="<%= t('browse.searchPh') %>">
   </div>
   <div class="field">
-    <label>Crop</label>
+    <label><%= t('browse.crop') %></label>
     <select name="crop">
-      <option value="">All crops</option>
+      <option value=""><%= t('browse.allCrops') %></option>
       <% cropOptions.forEach((c) => { %>
         <option value="<%= c %>" <%= filters.crop === c ? 'selected' : '' %>><%= c %></option>
       <% }) %>
     </select>
   </div>
   <div class="field">
-    <label>Village</label>
+    <label><%= t('browse.village') %></label>
     <select name="village">
-      <option value="">All villages</option>
+      <option value=""><%= t('browse.allVillages') %></option>
       <% villageOptions.forEach((v) => { %>
         <option value="<%= v %>" <%= filters.village === v ? 'selected' : '' %>><%= v %></option>
       <% }) %>
     </select>
   </div>
   <div class="field">
-    <label>Quality</label>
+    <label><%= t('browse.quality') %></label>
     <select name="quality">
-      <option value="">Any</option>
+      <option value=""><%= t('browse.any') %></option>
       <% qualities.forEach((q) => { %>
-        <option value="<%= q %>" <%= filters.quality === q ? 'selected' : '' %>><%= q %></option>
+        <option value="<%= q %>" <%= filters.quality === q ? 'selected' : '' %>><%= t('quality.' + q) %></option>
       <% }) %>
     </select>
   </div>
   <div class="field">
-    <label>Min price (₹)</label>
+    <label><%= t('browse.minPrice') %></label>
     <input type="number" min="0" name="minPrice" value="<%= filters.minPrice || '' %>" placeholder="e.g. 20">
   </div>
   <div class="field">
-    <label>Max price (₹)</label>
+    <label><%= t('browse.maxPrice') %></label>
     <input type="number" min="0" name="maxPrice" value="<%= filters.maxPrice || '' %>" placeholder="e.g. 100">
   </div>
   <div class="field">
-    <label>Sort by</label>
+    <label><%= t('browse.sortBy') %></label>
     <select name="sort">
-      <option value="newest" <%= filters.sort === 'newest' || !filters.sort ? 'selected' : '' %>>Newest first</option>
-      <option value="priceAsc" <%= filters.sort === 'priceAsc' ? 'selected' : '' %>>Price: low → high</option>
-      <option value="priceDesc" <%= filters.sort === 'priceDesc' ? 'selected' : '' %>>Price: high → low</option>
-      <option value="qtyDesc" <%= filters.sort === 'qtyDesc' ? 'selected' : '' %>>Quantity: high → low</option>
+      <option value="newest" <%= filters.sort === 'newest' || !filters.sort ? 'selected' : '' %>><%= t('browse.newestFirst') %></option>
+      <option value="priceAsc" <%= filters.sort === 'priceAsc' ? 'selected' : '' %>><%= t('browse.priceAsc') %></option>
+      <option value="priceDesc" <%= filters.sort === 'priceDesc' ? 'selected' : '' %>><%= t('browse.priceDesc') %></option>
+      <option value="qtyDesc" <%= filters.sort === 'qtyDesc' ? 'selected' : '' %>><%= t('browse.qtyDesc') %></option>
     </select>
   </div>
   <div class="field filter-actions">
-    <button type="submit" class="btn btn-primary">Apply filters</button>
-    <a href="/listings" class="btn btn-ghost btn-sm">Reset</a>
+    <button type="submit" class="btn btn-primary"><%= t('browse.apply') %></button>
+    <a href="/listings" class="btn btn-ghost btn-sm"><%= t('browse.reset') %></a>
   </div>
 </form>
 
@@ -70,7 +70,7 @@
   </div>
 <% } else { %>
   <div class="empty-state">
-    <p>😔 No listings match these filters. <a href="/listings">Clear filters</a> or check back soon.</p>
+    <p><%= t('browse.noMatch') %> <a href="/listings"><%= t('browse.clearFilters') %></a> <%= t('browse.clearCheck') %></p>
   </div>
 <% } %>
 

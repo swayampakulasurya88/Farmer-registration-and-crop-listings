@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= lang %>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌾</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Noto+Sans+Telugu:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -18,37 +18,45 @@
       <span class="brand-logo">🌾</span>
       <span class="brand-text">
         <strong>KrishiSetu</strong>
-        <small>Farmer &amp; Crop Listings · <%= config.DISTRICT %></small>
+        <small><%= t('brand.tag') %> · <%= config.DISTRICT %></small>
       </span>
     </a>
 
-    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">☰</button>
+    <div class="lang-switch" role="group" aria-label="<%= t('lang.label') %>">
+      <a class="lang-pill <%= lang === 'en' ? 'active' : '' %>" href="<%= langHref('en') %>" title="<%= t('lang.en') %>" data-lang="en">EN</a>
+      <a class="lang-pill <%= lang === 'te' ? 'active' : '' %>" href="<%= langHref('te') %>" title="<%= t('lang.te') %>" data-lang="te">తె</a>
+      <a class="lang-pill <%= lang === 'hi' ? 'active' : '' %>" href="<%= langHref('hi') %>" title="<%= t('lang.hi') %>" data-lang="hi">हि</a>
+    </div>
+
+    <button class="nav-toggle" id="nav-toggle" aria-label="<%= t('nav.toggle') %>">☰</button>
 
     <nav class="main-nav" id="main-nav">
-      <a href="/">Home</a>
-      <a href="/listings">Browse</a>
-      <a href="/trends">Price Trends</a>
+      <a href="/"><%= t('nav.home') %></a>
+      <a href="/listings"><%= t('nav.browse') %></a>
+      <a href="/trends"><%= t('nav.trends') %></a>
 
       <% if (currentUser) { %>
         <% if (currentUser.role === 'farmer') { %>
-          <a href="/farmer/dashboard">My Dashboard</a>
+          <a href="/farmer/dashboard"><%= t('nav.dashboard') %></a>
         <% } else if (currentUser.role === 'buyer') { %>
-          <a href="/buyer/dashboard">My Dashboard</a>
+          <a href="/buyer/dashboard"><%= t('nav.dashboard') %></a>
         <% } else if (currentUser.role === 'admin') { %>
-          <a href="/admin">Admin Panel</a>
+          <a href="/admin"><%= t('nav.admin') %></a>
         <% } %>
 
         <span class="nav-user" title="<%= currentUser.email || currentUser.phone || '' %>">
           👤 <%= currentUser.name %>
-          <em class="badge badge-<%= currentUser.role %>"><%= currentUser.role %></em>
+          <% if (currentUser.role === 'admin' || currentUser.role === 'farmer' || currentUser.role === 'buyer') { %>
+            <em class="badge badge-<%= currentUser.role %>"><%= currentUser.role %></em>
+          <% } %>
         </span>
-        <a href="/auth/profile" class="nav-edit">✏️ Edit</a>
+        <a href="/auth/profile" class="nav-edit"><%= t('nav.edit') %></a>
         <form method="post" action="/auth/logout" class="inline-form">
-          <button class="btn btn-ghost btn-sm" type="submit">Logout</button>
+          <button class="btn btn-ghost btn-sm" type="submit"><%= t('nav.logout') %></button>
         </form>
       <% } else { %>
-        <a href="/auth/login?tab=admin" class="btn btn-ghost btn-sm">🛡️ Admin login</a>
-        <a href="/auth/login" class="btn btn-primary btn-sm">🚪 Enter</a>
+        <a href="/auth/login?tab=admin" class="btn btn-ghost btn-sm"><%= t('nav.adminLogin') %></a>
+        <a href="/auth/login" class="btn btn-primary btn-sm"><%= t('nav.enter') %></a>
       <% } %>
     </nav>
   </div>

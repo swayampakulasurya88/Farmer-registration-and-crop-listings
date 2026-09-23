@@ -2,40 +2,40 @@
 
 <div class="page-head dash-head">
   <div>
-    <h1>🛡️ District admin panel</h1>
-    <p class="muted">Overview &amp; moderation for <%= config.DISTRICT %> · CSV export for reports</p>
+    <h1><%= t('admin.title') %></h1>
+    <p class="muted"><%= t('admin.sub', { d: config.DISTRICT }) %></p>
   </div>
-  <a href="/admin/db" class="btn btn-outline btn-lg">🗄️ Database</a>
-  <a href="/admin/export" class="btn btn-outline btn-lg">⬇️ Export listings (CSV)</a>
+  <a href="/admin/db" class="btn btn-outline btn-lg"><%= t('admin.dbBtn') %></a>
+  <a href="/admin/export" class="btn btn-outline btn-lg"><%= t('admin.exportBtn') %></a>
 </div>
 
 <div class="dash-stats">
   <div class="stat-card stat-card-plain">
     <span class="stat-num"><%= stats.farmers %></span>
-    <span class="stat-label">Farmers</span>
+    <span class="stat-label"><%= t('admin.farmers') %></span>
   </div>
   <div class="stat-card stat-card-plain">
     <span class="stat-num"><%= stats.buyers %></span>
-    <span class="stat-label">Buyers</span>
+    <span class="stat-label"><%= t('admin.buyers') %></span>
   </div>
   <div class="stat-card stat-card-plain">
     <span class="stat-num"><%= stats.activeListings %></span>
-    <span class="stat-label">Active listings</span>
+    <span class="stat-label"><%= t('admin.activeListings') %></span>
   </div>
   <div class="stat-card stat-card-plain">
     <span class="stat-num"><%= stats.interests %></span>
-    <span class="stat-label">Interests exchanged</span>
+    <span class="stat-label"><%= t('admin.interestsExchanged') %></span>
   </div>
 </div>
 
 <!-- ============ Users ============ -->
 <div class="card mt">
-  <h3>👥 Registered users</h3>
+  <h3><%= t('admin.registeredUsers') %></h3>
   <div class="table-wrap">
     <table class="table">
       <thead>
         <tr>
-          <th>Name</th><th>Role</th><th>Village</th><th>Address</th><th>Contact</th><th>Joined</th><th>Status</th><th>Action</th>
+          <th><%= t('auth.fullName') %></th><th><%= t('admin.thRole') %></th><th><%= t('admin.thVillage') %></th><th><%= t('admin.thAddress') %></th><th><%= t('admin.thContact') %></th><th><%= t('admin.thJoined') %></th><th><%= t('admin.thStatus') %></th><th><%= t('admin.thAction') %></th>
         </tr>
       </thead>
       <tbody>
@@ -47,14 +47,14 @@
             <td><%= u.address || '—' %></td>
             <td><%= u.contact || u.phone || '—' %></td>
             <td class="small"><%= new Date(u.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
-            <td><span class="badge badge-status <%= u.active === false ? 'badge-sold' : 'badge-active' %>"><%= u.active === false ? 'disabled' : 'active' %></span></td>
+            <td><span class="badge badge-status <%= u.active === false ? 'badge-sold' : 'badge-active' %>"><%= u.active === false ? t('admin.disabled') : t('admin.active') %></span></td>
             <td>
               <% if (u.id !== currentUser.id) { %>
-                <form method="post" action="/admin/users/<%= u.id %>/<%= u.active === false ? 'activate' : 'deactivate' %>" class="inline-form" data-confirm="<%= u.active === false ? 'Reactivate this account?' : 'Deactivate this account? Their listings will be hidden.' %>">
-                  <button class="btn btn-ghost btn-sm" type="submit"><%= u.active === false ? '↺ Activate' : '⏸ Deactivate' %></button>
+                <form method="post" action="/admin/users/<%= u.id %>/<%= u.active === false ? 'activate' : 'deactivate' %>" class="inline-form" data-confirm="<%= u.active === false ? t('admin.reactivateConfirm') : t('admin.deactivateConfirm') %>">
+                  <button class="btn btn-ghost btn-sm" type="submit"><%= u.active === false ? t('admin.activate') : t('admin.deactivate') %></button>
                 </form>
               <% } else { %>
-                <span class="muted small">you</span>
+                <span class="muted small"><%= t('admin.you') %></span>
               <% } %>
             </td>
           </tr>
@@ -66,12 +66,12 @@
 
 <!-- ============ Listings ============ -->
 <div class="card mt">
-  <h3>📋 Latest listings (<%= listings.length %> shown)</h3>
+  <h3><%= t('admin.latestListings', { n: listings.length }) %></h3>
   <div class="table-wrap">
     <table class="table">
       <thead>
         <tr>
-          <th>Crop</th><th>Farmer</th><th>Quantity</th><th>Price</th><th>Quality</th><th>Location</th><th>Status</th><th>Posted</th><th>Action</th>
+          <th><%= t('table.crop') %></th><th><%= t('detail.farmer') %></th><th><%= t('admin.thQuantity') %></th><th><%= t('admin.thPrice') %></th><th><%= t('browse.quality') %></th><th><%= t('admin.thLocation') %></th><th><%= t('admin.thStatus') %></th><th><%= t('admin.thPosted') %></th><th><%= t('admin.thAction') %></th>
         </tr>
       </thead>
       <tbody>
@@ -81,15 +81,15 @@
             <td><%= l.farmerName %></td>
             <td><%= Number(l.quantity).toLocaleString('en-IN') %> <%= l.unit %></td>
             <td>₹<%= Number(l.price).toLocaleString('en-IN') %>/<%= l.priceUnit.replace('per ', '') %></td>
-            <td><span class="badge badge-quality badge-<%= l.quality.toLowerCase().replace(' ', '-') %>"><%= l.quality %></span></td>
+            <td><span class="badge badge-quality badge-<%= l.quality.toLowerCase().replace(' ', '-') %>"><%= t('quality.' + l.quality) %></span></td>
             <td><%= l.location %></td>
-            <td><span class="badge badge-status badge-<%= l.status %>"><%= l.status %></span></td>
+            <td><span class="badge badge-status badge-<%= l.status %>"><%= t('status.' + l.status) %></span></td>
             <td class="small"><%= new Date(l.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) %></td>
             <td>
               <div class="row-actions">
-                <a class="btn btn-ghost btn-sm" href="/listings/<%= l.id %>">View</a>
-                <form method="post" action="/admin/listings/<%= l.id %>/remove" class="inline-form" data-confirm="Remove this listing permanently?">
-                  <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+                <a class="btn btn-ghost btn-sm" href="/listings/<%= l.id %>"><%= t('admin.view') %></a>
+                <form method="post" action="/admin/listings/<%= l.id %>/remove" class="inline-form" data-confirm="<%= t('admin.removeConfirm') %>">
+                  <button class="btn btn-danger btn-sm" type="submit"><%= t('admin.remove') %></button>
                 </form>
               </div>
             </td>
@@ -103,10 +103,10 @@
 <!-- ============ Volume summary ============ -->
 <% if (volume.length) { %>
 <div class="card mt">
-  <h3>📦 Total listed volume by crop</h3>
+  <h3><%= t('admin.volumeByCrop') %></h3>
   <div class="table-wrap">
     <table class="table table-narrow">
-      <thead><tr><th>Crop</th><th>Volume (kg)</th></tr></thead>
+      <thead><tr><th><%= t('table.crop') %></th><th><%= t('admin.thVolume') %></th></tr></thead>
       <tbody>
         <% volume.forEach((v) => { %>
           <tr><td><strong><%= config.CROP_EMOJI[v.crop] || '🌾' %> <%= v.crop %></strong></td><td><%= v.volumeKg.toLocaleString('en-IN') %></td></tr>

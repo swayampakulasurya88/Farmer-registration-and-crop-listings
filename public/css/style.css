@@ -119,6 +119,63 @@ a:hover { text-decoration: underline; }
 .nav-edit:hover { text-decoration: none; filter: brightness(0.97); }
 .nav-toggle { display: none; background: none; border: 1px solid var(--line); border-radius: 8px; font-size: 1.2rem; padding: 4px 10px; cursor: pointer; }
 
+/* ---------------- Language switch (EN · తె · हि) ---------------- */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px;
+  box-shadow: 0 1px 6px rgba(6, 95, 70, 0.08);
+  flex: none;
+}
+.lang-pill {
+  font-family: 'Inter', 'Noto Sans Telugu', 'Noto Sans Devanagari', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--muted);
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-decoration: none;
+  line-height: 1.2;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.lang-pill:hover { text-decoration: none; color: var(--green-dark); background: #ecfdf5; }
+.lang-pill.active {
+  background: linear-gradient(135deg, #10b981, #0e7490);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(14, 116, 144, 0.35);
+}
+
+/* Telugu: Pallavi (bold) first when installed locally, Noto Sans Telugu fallback */
+html[lang="te"] body {
+  font-family: 'Pallavi', 'Noto Sans Telugu', 'Inter', system-ui, sans-serif;
+}
+html[lang="te"] h1, html[lang="te"] h2, html[lang="te"] h3, html[lang="te"] h4,
+html[lang="te"] .brand-text strong {
+  font-family: 'Pallavi', 'Noto Sans Telugu', 'Poppins', sans-serif;
+  font-weight: 700;
+}
+html[lang="te"] .btn, html[lang="te"] input, html[lang="te"] select, html[lang="te"] textarea,
+html[lang="te"] .main-nav, html[lang="te"] .lang-pill {
+  font-family: 'Pallavi', 'Noto Sans Telugu', 'Inter', sans-serif;
+}
+/* Hindi: Noto Sans Devanagari */
+html[lang="hi"] body {
+  font-family: 'Noto Sans Devanagari', 'Inter', system-ui, sans-serif;
+}
+html[lang="hi"] h1, html[lang="hi"] h2, html[lang="hi"] h3, html[lang="hi"] h4,
+html[lang="hi"] .brand-text strong {
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+html[lang="hi"] .btn, html[lang="hi"] input, html[lang="hi"] select, html[lang="hi"] textarea,
+html[lang="hi"] .main-nav {
+  font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+}
+
 .inline-form { display: inline-block; margin: 0; }
 
 /* ---------------- Buttons ---------------- */
@@ -692,6 +749,8 @@ a:hover { text-decoration: underline; }
 
 @media (max-width: 720px) {
   .nav-toggle { display: block; }
+  .lang-switch { padding: 2px; }
+  .lang-pill { padding: 3px 8px; font-size: 11.5px; }
   .main-nav {
     display: none;
     position: absolute;
