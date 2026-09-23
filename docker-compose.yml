@@ -34,7 +34,7 @@ services:
         condition: service_healthy
     environment:
       PORT: 3000
-      DATA_DIR: /app/data
+      DATA_DIR: /var/lib/krishisetu
       DATABASE_URL: postgres://krishisetu:${PG_PASS:-krishisetu}@db:5432/krishisetu
       SESSION_SECRET: ${SESSION_SECRET:-change-me-to-a-long-random-string}
       DISTRICT: ${DISTRICT:-Krishna District}
@@ -45,7 +45,7 @@ services:
       SMTP_PASS: ${SMTP_PASS:-}
       MAIL_FROM: ${MAIL_FROM:-}
     volumes:
-      - appdata:/app/data
+      - appdata:/var/lib/krishisetu
 
 volumes:
   appdata:

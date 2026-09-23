@@ -28,7 +28,7 @@ docker compose logs -f web                               # app logs
   `docker compose down` keeps the data; `docker compose down -v` wipes it.
 * Update: `git pull && docker compose up -d --build`.
 * Embedded-Postgres fallback: run a single container instead —
-  `docker run -d -p 3000:3000 -v ks-data:/app/data krishisetu` (no compose).
+  `docker run -d -p 3000:3000 -v ks-data:/var/lib/krishisetu krishisetu` (no compose).
 
 ## 2. Railway (auto-deploy from GitHub, ~5 min)
 
@@ -42,7 +42,7 @@ run `node server.js`, and health-check `/api/status` — nothing to configure.
 3. **Networking → Generate Domain** → public HTTPS URL (that link is permanent).
 4. **Variables** → add: `SESSION_SECRET` (random hex, e.g. from
    `openssl rand -hex 32`), `DISTRICT`, optional `SMTP_*`.
-5. **Volumes** → add a volume named `data`, mount path **`/app/data`**
+5. **Volumes** → add a volume named `data`, mount path **`/var/lib/krishisetu`**
    → persists the SQLite database (and embedded Postgres) across redeploys.
    Optional: add a Railway **PostgreSQL** plugin — Railway injects
    `DATABASE_URL` and it becomes the OTP store.
@@ -68,7 +68,7 @@ configure by hand:
 2. [render.com](https://render.com) → **New → Blueprint**.
 3. Pick this repo → Render creates the `krishisetu` web service and deploys
    the `Dockerfile` automatically, then gives you a public URL.
-4. Data: the blueprint mounts a **persistent disk at `/app/data`** (both the
+4. Data: the blueprint mounts a **persistent disk at `/var/lib/krishisetu`** (both the
    SQLite database and the embedded PostgreSQL OTP store live there). Disks
    need a **paid plan** — on the free tier remove the `disk:` block from
    `render.yaml`; the site still works but data resets when the service
@@ -79,7 +79,7 @@ configure by hand:
    after 30 days.
 
 Manual (no blueprint): New → **Web Service** → repo → Runtime **Docker** →
-Health Check Path `/api/status` → Create. Add a persistent disk at `/app/data`.
+Health Check Path `/api/status` → Create. Add a persistent disk at `/var/lib/krishisetu`.
 
 ## 4. Fly.io (Docker + volume)
 
@@ -90,7 +90,7 @@ fly volumes append ks_data --app <app-name>
 fly secrets set SESSION_SECRET=$(openssl rand -hex 32)
 fly status                        # public URL + health
 ```
-Mount the volume at `/app/data`; set `DATABASE_URL` via `fly postgres create`
+Mount the volume at `/var/lib/krishisetu`; set `DATABASE_URL` via `fly postgres create`
 or keep the embedded cluster.
 
 ## 5. VPS without Docker (PM2)

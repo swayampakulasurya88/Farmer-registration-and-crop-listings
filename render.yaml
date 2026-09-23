@@ -3,9 +3,11 @@
 #
 # How data persists:
 #   * The Docker image already contains the app AND an embedded PostgreSQL
-#     (OTP store). A PERSISTENT DISK is mounted at /app/data, so both the
-#     SQLite database (farmers/buyers/listings) and the OTP store survive
-#     restarts and redeploys — no external database needed.
+#     (OTP store). A PERSISTENT DISK is mounted at /var/lib/krishisetu, so
+#     both the SQLite database (farmers/buyers/listings) and the OTP store
+#     survive restarts and redeploys — no external database needed.
+#     (The runtime dir must NOT be /app/data — that path holds the source
+#     module data/db.js in the image, and a volume there would hide it.)
 #   * IMPORTANT: persistent disks require a PAID Render plan. On the free
 #     tier, remove the `disk:` block; the app still works, but all data
 #     resets whenever the service sleeps or is redeployed (demo data
@@ -27,7 +29,7 @@ services:
     healthCheckPath: /api/status
     envVars:
       - key: DATA_DIR
-        value: /app/data
+        value: /var/lib/krishisetu
       - key: DISTRICT
         value: Krishna District
       - key: STATE
@@ -48,7 +50,7 @@ services:
         sync: false
     disk:
       name: krishisetu-data
-      mountPath: /app/data
+      mountPath: /var/lib/krishisetu
       sizeGB: 1
 
 # Optional — managed PostgreSQL for the OTP store instead of the embedded one

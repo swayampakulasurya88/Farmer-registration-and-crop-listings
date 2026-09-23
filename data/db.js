@@ -17,7 +17,7 @@ const path = require('path');
 const initSqlJs = require('sql.js');
 
 // DATA_DIR defaults to this folder (data/) — exactly the local behaviour.
-// On a deployed server, point it at a mounted volume (e.g. DATA_DIR=/app/data).
+// On a deployed server, point it at a mounted volume (e.g. DATA_DIR=/var/lib/krishisetu).
 const DATA_DIR = process.env.DATA_DIR || __dirname;
 const DB_FILE = path.join(DATA_DIR, 'krishisetu.sqlite');
 const LEGACY_FILE = path.join(DATA_DIR, 'store.json');
