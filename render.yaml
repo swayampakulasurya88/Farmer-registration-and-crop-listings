@@ -1,0 +1,60 @@
+# Render blueprint — press "New → Blueprint" on render.com, pick this repo,
+# and Render creates the web service below automatically.
+#
+# How data persists:
+#   * The Docker image already contains the app AND an embedded PostgreSQL
+#     (OTP store). A PERSISTENT DISK is mounted at /app/data, so both the
+#     SQLite database (farmers/buyers/listings) and the OTP store survive
+#     restarts and redeploys — no external database needed.
+#   * IMPORTANT: persistent disks require a PAID Render plan. On the free
+#     tier, remove the `disk:` block; the app still works, but all data
+#     resets whenever the service sleeps or is redeployed (demo data
+#     re-seeds automatically).
+#   * Alternative OTP store: uncomment the `databases:` block below and set
+#     env var DATABASE_URL (Render auto-fills it). Free-tier Render
+#     PostgreSQL instances EXPIRE permanently after 30 days.
+#
+# To add variable values later, go to the service → Environment.
+
+services:
+  - type: web
+    name: krishisetu
+    runtime: docker
+    repo: https://github.com/swayampakulasurya88/Farmer-registration-and-crop-listings
+    plan: free
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/status
+    envVars:
+      - key: DATA_DIR
+        value: /app/data
+      - key: DISTRICT
+        value: Krishna District
+      - key: STATE
+        value: Andhra Pradesh
+      - key: SESSION_SECRET
+        generateValue: true
+      # Real OTP emails: fill SMTP_* with a Gmail App Password.
+      # Until then, SMTP_HOST is empty → DEMO MODE (OTP shown on screen + logs).
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+    disk:
+      name: krishisetu-data
+      mountPath: /app/data
+      sizeGB: 1
+
+# Optional — managed PostgreSQL for the OTP store instead of the embedded one
+# (free tier expires after 30 days):
+# databases:
+#   - name: krishisetu-db
+#     databaseName: krishisetu
+#     user: krishisetu
+#     plan: free

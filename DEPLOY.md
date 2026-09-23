@@ -43,16 +43,27 @@ docker compose logs -f web                               # app logs
 
 Restart-safe: sessions reset on redeploy; the SQLite database and Postgres do not.
 
-## 3. Render (free tier works, data resets on free plan)
+## 3. Render (from GitHub — Blueprint, ~5 min)
 
-1. Push repo to GitHub → [render.com](https://render.com) → **New → Web
-   Blueprint**; Render reads the `Dockerfile` automatically.
-2. Add a **PostgreSQL** instance (or use the embedded cluster — no
-   `DATABASE_URL` needed) and set `DATABASE_URL`.
-3. Free tier has an **ephemeral disk** — the SQLite file resets when the
-   service sleeps/redeploys (demo data re-seeds). Add a **persistent disk**
-   (paid) mounted at `/app/data` to keep real registrations.
-4. Environment: `SESSION_SECRET`, `DISTRICT`, optional `SMTP_*`.
+Render reads the included `render.yaml` blueprint, so there is nothing to
+configure by hand:
+
+1. Push the repo to GitHub (already `origin`).
+2. [render.com](https://render.com) → **New → Blueprint**.
+3. Pick this repo → Render creates the `krishisetu` web service and deploys
+   the `Dockerfile` automatically, then gives you a public URL.
+4. Data: the blueprint mounts a **persistent disk at `/app/data`** (both the
+   SQLite database and the embedded PostgreSQL OTP store live there). Disks
+   need a **paid plan** — on the free tier remove the `disk:` block from
+   `render.yaml`; the site still works but data resets when the service
+   sleeps / redeploys (demo data re-seeds).
+5. Optional: to use Render's managed PostgreSQL instead of the embedded
+   cluster, uncomment the `databases:` block in `render.yaml` and add the
+   `DATABASE_URL` env var from it. Note: free-tier Render Postgres expires
+   after 30 days.
+
+Manual (no blueprint): New → **Web Service** → repo → Runtime **Docker** →
+Health Check Path `/api/status` → Create. Add a persistent disk at `/app/data`.
 
 ## 4. Fly.io (Docker + volume)
 
