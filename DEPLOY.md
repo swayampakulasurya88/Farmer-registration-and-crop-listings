@@ -32,14 +32,30 @@ docker compose logs -f web                               # app logs
 
 ## 2. Railway (auto-deploy from GitHub, ~5 min)
 
+`railway.json` in the repo already tells Railway to build the `Dockerfile`,
+run `node server.js`, and health-check `/api/status` — nothing to configure.
+
+**Dashboard (easiest):**
 1. Push this repo to GitHub (already configured as `origin`).
 2. [railway.app](https://railway.app) → **New Project → Deploy from GitHub repo**.
-   Railway detects the `Dockerfile` and builds it.
-3. Add plugins/services:
-   * **PostgreSQL** → Railway injects `DATABASE_URL` automatically (OTP store).
-   * **Volume** → mount it at `/app/data` (persists the SQLite database).
-4. **Settings → Networking → Generate Domain** → public HTTPS URL.
-5. Set env vars: `SESSION_SECRET` (random hex), `DISTRICT`, optional `SMTP_*`.
+   Railway builds the Dockerfile and starts the service.
+3. **Networking → Generate Domain** → public HTTPS URL (that link is permanent).
+4. **Variables** → add: `SESSION_SECRET` (random hex, e.g. from
+   `openssl rand -hex 32`), `DISTRICT`, optional `SMTP_*`.
+5. **Volumes** → add a volume named `data`, mount path **`/app/data`**
+   → persists the SQLite database (and embedded Postgres) across redeploys.
+   Optional: add a Railway **PostgreSQL** plugin — Railway injects
+   `DATABASE_URL` and it becomes the OTP store.
+
+**CLI (same result, scriptable):**
+```bash
+npm i -g railway
+railway login                 # or: RAILWAY_TOKEN=<token> railway login --browserless
+railway init
+railway variables --set "SESSION_SECRET=$(openssl rand -hex 32)" "DISTRICT=Krishna District"
+railway up --detach           # builds the Dockerfile and deploys
+railway domain                # prints the permanent public URL
+```
 
 Restart-safe: sessions reset on redeploy; the SQLite database and Postgres do not.
 

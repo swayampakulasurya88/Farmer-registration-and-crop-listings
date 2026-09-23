@@ -67,6 +67,8 @@ Quickest — **Render** (from this GitHub repo):
 3. Add a `SESSION_SECRET` env var. Free tier: remove the `disk:` block (data resets on redeploy). Paid: keep the persistent disk at `/app/data`.
 4. Deploy → done. First boot seeds demo data.
 
+**Also on Railway** (just as easy): `railway.json` is included → railway.app → **New Project → Deploy from GitHub repo** → **Generate Domain**. Mount a volume at `/app/data` so data survives redeploys. See `DEPLOY.md` §2.
+
 ---
 
 ## 4. Sanity check after any install
