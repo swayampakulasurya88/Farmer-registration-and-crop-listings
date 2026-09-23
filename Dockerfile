@@ -36,7 +36,10 @@ RUN mkdir -p /app/data && chown -R node:node /app
 USER node
 
 EXPOSE 3000
-VOLUME ["/app/data"]
+
+# NOTE: no Docker VOLUME instruction — Railway (and compose) define volumes
+# externally and the Docker VOLUME keyword is rejected by Railway's builder.
+# Local runs: `docker run -v ks-data:/app/data krishisetu` still works.
 
 # /api/status reports db + postgres health (returns 200 when ready).
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
