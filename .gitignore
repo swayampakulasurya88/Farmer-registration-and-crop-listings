@@ -5,3 +5,4 @@ data/store.json
 data/*.sqlite
 data/pg/
 .DS_Store
+/*.zip

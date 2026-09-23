@@ -7,5 +7,6 @@ data
 .git
 .gitignore
 *.log
+*.zip
 npm-debug.log*
 .DS_Store
