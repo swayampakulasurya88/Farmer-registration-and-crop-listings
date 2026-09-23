@@ -166,6 +166,8 @@ function count(sql, params = []) {
 // Flushes the in-memory SQLite database to disk.
 function persist() {
   if (!dirty) return;
+  // Self-healing: make sure the data dir exists (fresh volumes, removed dirs).
+  fs.mkdirSync(DATA_DIR, { recursive: true });
   fs.writeFileSync(DB_FILE, Buffer.from(db.export()));
   dirty = false;
 }
@@ -451,7 +453,7 @@ function migrateFromJson() {
         `${interests.length} interests, ${favorites.length} favorites`
     );
   } catch (err) {
-    db.run('ROLLBACK');
+    try { db.run('ROLLBACK'); } catch (_) { /* transaction already closed */ }
     console.error('Legacy import failed:', err && err.message ? err.message : err);
   }
 }
@@ -521,12 +523,16 @@ function seedStore(store) {
     fStmt.free();
 
     db.run('COMMIT');
-    dirty = true;
-    persist();
   } catch (err) {
-    db.run('ROLLBACK');
+    // ROLLBACK is only valid while a transaction is still open. If COMMIT
+    // already ran (e.g. the failure was in persist() below), ROLLBACK itself
+    // throws "cannot rollback - no transaction is active" and would MASK the
+    // real error — so swallow it and always rethrow the original problem.
+    try { db.run('ROLLBACK'); } catch (_) { /* transaction already closed */ }
     throw err;
   }
+  dirty = true;
+  persist();
 }
 
 // Status for the admin "Database" page: engine, file, size, row counts,

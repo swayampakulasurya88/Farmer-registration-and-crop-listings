@@ -36,9 +36,11 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY . .
 
 # Runtime needs a writable data dir for SQLite + embedded PostgreSQL.
-RUN mkdir -p /var/lib/krishisetu && chown -R node:node /var/lib/krishisetu && chown -R node:node /app
-
-USER node
+# The app intentionally runs as ROOT so it can write into platform volumes
+# (Railway/Render mount them root-owned; the non-root 'node' user got EACCES
+# and the whole container failed). This image holds no sensitive files — env
+# secrets are injected at runtime.
+RUN mkdir -p /var/lib/krishisetu
 
 EXPOSE 3000
 

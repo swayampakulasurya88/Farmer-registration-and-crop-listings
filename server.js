@@ -11,7 +11,13 @@ const fb = require('./database/firebase');
 
 async function main() {
   await db.init();   // open / create data/krishisetu.sqlite
-  ensureSeeded();    // demo data only when the database is empty
+  try {
+    ensureSeeded();  // demo data only when the database is empty
+  } catch (err) {
+    // Never let a failed demo seed take the whole site down — log it loudly
+    // and keep serving (the DB still opens, just with fewer/no rows).
+    console.error('⚠️  Demo seed failed — starting anyway:', err && err.message ? err.message : err);
+  }
 
   // PostgreSQL (forgot-password OTP store) — fails soft to in-memory.
   await pg.start();
