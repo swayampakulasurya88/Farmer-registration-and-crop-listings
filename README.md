@@ -1,5 +1,10 @@
 # 🌾 KrishiSetu — Farmer Registration & Crop Listings
 
+> 🔗 **Live demo — deployed on Railway (permanent):**
+> **[https://krishisetu-production-b4b0.up.railway.app](https://krishisetu-production-b4b0.up.railway.app)**
+>
+> [![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20Website-brightgreen?style=for-the-badge&logo=railway&logoColor=white)](https://krishisetu-production-b4b0.up.railway.app)
+
 > **A district-level shared, structured record of crop availability and prices — connecting farmers and buyers directly, with no middlemen.**
 
 KrishiSetu is a complete web platform where:
