@@ -1,0 +1,71 @@
+<%- include('partials/header') %>
+
+<div class="form-card">
+  <div class="card">
+    <div class="auth-head" style="text-align:left">
+      <span class="auth-emoji">✏️</span>
+      <h1>Edit your details</h1>
+      <p>Your <strong>address</strong> is editable any time — farmers &amp; buyers always see your latest details.</p>
+    </div>
+
+    <form method="post" action="/auth/profile" class="form" novalidate>
+      <div class="form-grid">
+        <div class="field">
+          <label for="name">Full name</label>
+          <input type="text" id="name" name="name" value="<%= form.name || '' %>" required>
+          <% if (fieldErrors.name) { %><p class="field-error"><%= fieldErrors.name %></p><% } %>
+        </div>
+        <div class="field">
+          <label for="phone">Mobile number</label>
+          <input type="tel" id="phone" name="phone" value="<%= form.phone || '' %>" required>
+          <% if (fieldErrors.phone) { %><p class="field-error"><%= fieldErrors.phone %></p><% } %>
+        </div>
+        <div class="field">
+          <label for="village">Village / town</label>
+          <select id="village" name="village">
+            <option value="">— Select —</option>
+            <% villages.forEach((v) => { %>
+              <option value="<%= v %>" <%= form.village === v ? 'selected' : '' %>><%= v %></option>
+            <% }) %>
+          </select>
+          <% if (fieldErrors.village) { %><p class="field-error"><%= fieldErrors.village %></p><% } %>
+        </div>
+        <div class="field">
+          <label for="email">Email (optional)</label>
+          <input type="email" id="email" name="email" value="<%= form.email || '' %>" placeholder="you@example.com">
+          <% if (fieldErrors.email) { %><p class="field-error"><%= fieldErrors.email %></p><% } %>
+        </div>
+
+        <div class="field field-full">
+          <label for="address">📍 Address (street / landmark — editable)</label>
+          <textarea id="address" name="address" rows="2" placeholder="e.g. 4-56, Main Road, near Hanuman temple"><%= form.address || '' %></textarea>
+          <% if (fieldErrors.address) { %><p class="field-error"><%= fieldErrors.address %></p><% } %>
+        </div>
+
+        <% if (currentUser.role === 'farmer') { %>
+          <div class="field">
+            <label for="landSize">Land size</label>
+            <input type="text" id="landSize" name="landSize" value="<%= form.landSize || '' %>" placeholder="e.g. 5 acres">
+          </div>
+        <% } else if (currentUser.role === 'buyer') { %>
+          <div class="field">
+            <label for="businessType">Business type</label>
+            <select id="businessType" name="businessType">
+              <option value="">— Select —</option>
+              <% businessTypes.forEach((t) => { %>
+                <option value="<%= t %>" <%= form.businessType === t ? 'selected' : '' %>><%= t %></option>
+              <% }) %>
+            </select>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="form-actions">
+        <a href="/" class="btn btn-ghost">Cancel</a>
+        <button type="submit" class="btn btn-primary">💾 Save changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -38,16 +38,17 @@
           <a href="/admin">Admin Panel</a>
         <% } %>
 
-        <span class="nav-user" title="<%= currentUser.email %>">
+        <span class="nav-user" title="<%= currentUser.email || currentUser.phone || '' %>">
           👤 <%= currentUser.name %>
           <em class="badge badge-<%= currentUser.role %>"><%= currentUser.role %></em>
         </span>
+        <a href="/auth/profile" class="nav-edit">✏️ Edit</a>
         <form method="post" action="/auth/logout" class="inline-form">
           <button class="btn btn-ghost btn-sm" type="submit">Logout</button>
         </form>
       <% } else { %>
-        <a href="/auth/login" class="btn btn-ghost btn-sm">Login</a>
-        <a href="/auth/register" class="btn btn-primary btn-sm">Register</a>
+        <a href="/auth/login?tab=admin" class="btn btn-ghost btn-sm">🛡️ Admin login</a>
+        <a href="/auth/login" class="btn btn-primary btn-sm">🚪 Enter</a>
       <% } %>
     </nav>
   </div>

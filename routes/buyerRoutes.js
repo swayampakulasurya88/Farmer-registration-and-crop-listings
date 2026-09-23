@@ -5,6 +5,7 @@
 const express = require('express');
 const db = require('../data/db');
 const { requireBuyer } = require('../middleware/auth');
+const bus = require('../utils/bus');
 
 const router = express.Router();
 
@@ -35,6 +36,7 @@ router.post('/listings/:id/interest', requireBuyer, (req, res) => {
     buyerId: req.currentUser.id,
     message: String(req.body.message || '').trim().slice(0, 500),
   });
+  bus.broadcast('interests', { listingId: listing.id });
 
   res.redirect(
     `/listings/${listing.id}?msg=` +
@@ -49,6 +51,7 @@ router.post('/listings/:id/favorite', requireBuyer, (req, res) => {
   if (!listing) return res.redirect('/listings?err=Listing+not+found');
 
   const added = db.toggleFavorite(req.currentUser.id, listing.id);
+  bus.broadcast('favorites', { listingId: listing.id, buyerId: req.currentUser.id });
   const back = req.get('Referer') || `/listings/${listing.id}`;
   res.redirect(back + (added ? '?msg=Saved+to+your+list' : '?msg=Removed+from+your+list'));
 });

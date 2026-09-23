@@ -11,8 +11,8 @@
       <ul>
         <li><a href="/listings">Browse listings</a></li>
         <li><a href="/trends">Price trends</a></li>
-        <li><a href="/auth/register">Register</a></li>
-        <li><a href="/auth/login">Login</a></li>
+        <li><a href="/auth/login">Enter market (no password)</a></li>
+        <li><a href="/auth/login?tab=admin">Admin login</a></li>
       </ul>
     </div>
     <div>
@@ -26,6 +26,7 @@
 </footer>
 
 <script src="/js/main.js"></script>
+<script src="/js/realtime.js"></script>
 <%- typeof extraScript !== 'undefined' ? extraScript : '' %>
 </body>
 </html>

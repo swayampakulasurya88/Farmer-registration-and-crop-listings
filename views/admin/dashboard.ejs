@@ -5,6 +5,7 @@
     <h1>🛡️ District admin panel</h1>
     <p class="muted">Overview &amp; moderation for <%= config.DISTRICT %> · CSV export for reports</p>
   </div>
+  <a href="/admin/db" class="btn btn-outline btn-lg">🗄️ Database</a>
   <a href="/admin/export" class="btn btn-outline btn-lg">⬇️ Export listings (CSV)</a>
 </div>
 
@@ -34,17 +35,17 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Name</th><th>Email</th><th>Role</th><th>Village</th><th>Contact</th><th>Joined</th><th>Status</th><th>Action</th>
+          <th>Name</th><th>Role</th><th>Village</th><th>Address</th><th>Contact</th><th>Joined</th><th>Status</th><th>Action</th>
         </tr>
       </thead>
       <tbody>
         <% users.forEach((u) => { %>
           <tr class="<%= u.active === false ? 'row-inactive' : '' %>">
-            <td><strong><%= u.name %></strong><% if (u.businessType) { %><br><span class="muted small"><%= u.businessType %></span><% } %></td>
-            <td><%= u.email %></td>
+            <td><strong><%= u.name %></strong><% if (u.businessType) { %><br><span class="muted small"><%= u.businessType %></span><% } else if (u.email) { %><br><span class="muted small"><%= u.email %></span><% } %></td>
             <td><span class="badge badge-<%= u.role %>"><%= u.role %></span></td>
-            <td><%= u.village %></td>
-            <td><%= u.contact || u.phone %></td>
+            <td><%= u.village || '—' %></td>
+            <td><%= u.address || '—' %></td>
+            <td><%= u.contact || u.phone || '—' %></td>
             <td class="small"><%= new Date(u.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
             <td><span class="badge badge-status <%= u.active === false ? 'badge-sold' : 'badge-active' %>"><%= u.active === false ? 'disabled' : 'active' %></span></td>
             <td>

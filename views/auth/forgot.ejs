@@ -4,8 +4,8 @@
   <div class="auth-card">
     <div class="auth-head">
       <span class="auth-emoji">🔑</span>
-      <h1>Forgot your password?</h1>
-      <p>Enter your registered email or username and we'll send you a 6-digit OTP.</p>
+      <h1>Admin password recovery</h1>
+      <p>Only the admin account uses a password. Enter the admin username (SURYAS) or email and we'll send a 6-digit OTP.</p>
     </div>
 
     <% if (sent) { %>
@@ -26,8 +26,8 @@
     <% } else { %>
       <form method="post" action="/auth/forgot" class="form" novalidate>
         <div class="field">
-          <label for="login">Email address or username</label>
-          <input type="text" id="login" name="login" value="<%= form.login || '' %>" placeholder="you@example.com or SURYAS" required autofocus>
+          <label for="login">Admin username or email</label>
+          <input type="text" id="login" name="login" value="<%= form.login || '' %>" placeholder="SURYAS" required autofocus>
           <% if (fieldErrors.login) { %><p class="field-error"><%= fieldErrors.login %></p><% } %>
         </div>
 

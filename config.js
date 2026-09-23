@@ -10,7 +10,7 @@ module.exports = {
   // Villages / mandals of the district (used in filters + registration dropdown)
   VILLAGES: [
     'Vijayawada', 'Gudivada', 'Machilipatnam', 'Nuzvid', 'Jaggayyapeta',
-    'Vuyyuru', 'Gannavaram', 'Kankipadu', 'Penamaluru', 'Pamarru',
+    'Andipalem', 'Vuyyuru', 'Gannavaram', 'Kankipadu', 'Penamaluru', 'Pamarru',
     'Avanigadda', 'Pedana', 'Bantumilli', 'Mudinepalli', 'Kalavapamula'
   ],
 

@@ -1,0 +1,180 @@
+<%- include('../partials/header') %>
+
+<div class="page-head dash-head">
+  <div>
+    <h1>🗄️ Database status</h1>
+    <p class="muted">Live view of the SQLite backend — check that your data is really being stored</p>
+  </div>
+  <a href="/admin" class="btn btn-outline btn-lg">← Back to admin panel</a>
+</div>
+
+<div class="dash-stats">
+  <div class="stat-card stat-card-plain">
+    <span class="stat-num"><%= db.tables[0].rows %></span>
+    <span class="stat-label">Users</span>
+  </div>
+  <div class="stat-card stat-card-plain">
+    <span class="stat-num"><%= db.tables[1].rows %></span>
+    <span class="stat-label">Listings</span>
+  </div>
+  <div class="stat-card stat-card-plain">
+    <span class="stat-num"><%= db.tables[2].rows %></span>
+    <span class="stat-label">Interests</span>
+  </div>
+  <div class="stat-card stat-card-plain">
+    <span class="stat-num"><%= db.tables[3].rows %></span>
+    <span class="stat-label">Favorites</span>
+  </div>
+</div>
+
+<div class="card mt">
+  <h3>ℹ️ Connection info</h3>
+  <table class="table">
+    <tbody>
+      <tr><th class="w-40">Database engine</th><td><%= db.engine %></td></tr>
+      <tr><th class="w-40">Database file</th><td><code><%= db.file %></code></td></tr>
+      <tr><th class="w-40">File exists</th><td><%= db.fileExists ? '✅ yes' : '❌ no' %></td></tr>
+      <tr><th class="w-40">File size</th><td><%= fmtSize(db.sizeBytes) %></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card mt">
+  <h3>🛰️ Live backends</h3>
+  <div class="db-stack-grid">
+    <div class="db-stack-card <%= pgStatus.state === 'up' ? 'is-up' : pgStatus.state === 'error' ? 'is-down' : '' %>">
+      <h4>🐘 PostgreSQL <em><%= pgStatus.state %></em></h4>
+      <p class="muted">Forgot-password OTP store (durable).</p>
+      <table class="table table-sm">
+        <tbody>
+          <tr><th>Engine</th><td><%= pgStatus.engine %></td></tr>
+          <tr><th>Server</th><td><code>127.0.0.1:<%= pgStatus.port %>/<%= pgStatus.database %></code></td></tr>
+          <tr><th>OTP records</th><td><%= pgStatus.rows %></td></tr>
+          <tr><th>Detail</th><td><%= pgStatus.detail %></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="db-stack-card <%= fbStatus.state === 'connected' ? 'is-up' : 'is-idle' %>">
+      <h4>🔥 Firebase <em><%= fbStatus.state %></em></h4>
+      <p class="muted">Optional realtime mirror.</p>
+      <table class="table table-sm">
+        <tbody>
+          <tr><th>Engine</th><td><%= fbStatus.engine %></td></tr>
+          <tr><th>Database URL</th><td><code><%= fbStatus.databaseURL || '—' %></code></td></tr>
+          <tr><th>Detail</th><td><%= fbStatus.message %></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="db-stack-card is-up">
+      <h4>📡 Realtime sync <em class="ok">ON</em></h4>
+      <p class="muted">Server-Sent Events — no page refresh needed.</p>
+      <table class="table table-sm">
+        <tbody>
+          <tr><th>Transport</th><td>SSE <code>/events</code></td></tr>
+          <tr><th>Tabs watching now</th><td><%= rtClients %></td></tr>
+          <tr><th>Behavior</th><td>listings · interests · favorites · users auto-update in place</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card mt">
+  <h3>👥 Latest users</h3>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Village</th><th>Address</th><th>Active</th><th>Created</th></tr>
+      </thead>
+      <tbody>
+        <% db.recent.users.forEach(u => { %>
+          <tr>
+            <td><code><%= u.id %></code></td>
+            <td><%= u.name %></td>
+            <td><%= u.email || '—' %></td>
+            <td><span class="badge badge-<%= u.role %>"><%= u.role %></span></td>
+            <td><%= u.village || '—' %></td>
+            <td><%= u.address || '—' %></td>
+            <td><%= u.active === 1 ? '✅' : '🚫' %></td>
+            <td><%= fmtDate(u.createdAt) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card mt">
+  <h3>🌾 Latest listings</h3>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>ID</th><th>Crop</th><th>Variety</th><th>Qty</th><th>Price</th><th>Farmer</th><th>Status</th><th>Created</th></tr>
+      </thead>
+      <tbody>
+        <% db.recent.listings.forEach(l => { %>
+          <tr>
+            <td><code><%= l.id %></code></td>
+            <td><%= l.crop %></td>
+            <td><%= l.variety || '—' %></td>
+            <td><%= fmtQty(l.quantity) %> <%= l.unit %></td>
+            <td><%= inr(l.price) %> <%= l.priceUnit %></td>
+            <td><%= l.farmerName %></td>
+            <td><span class="badge badge-<%= l.status %>"><%= l.status %></span></td>
+            <td><%= fmtDate(l.createdAt) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card mt">
+  <h3>💬 Latest interests</h3>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Listing</th><th>Buyer</th><th>Message</th><th>Created</th></tr>
+      </thead>
+      <tbody>
+        <% db.recent.interests.forEach(i => { %>
+          <tr>
+            <td><code><%= i.listingId %></code></td>
+            <td><code><%= i.buyerId %></code></td>
+            <td><%= i.message || '—' %></td>
+            <td><%= fmtDate(i.createdAt) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card mt">
+  <h3>⭐ Latest favorites</h3>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Buyer</th><th>Listing</th><th>Created</th></tr>
+      </thead>
+      <tbody>
+        <% db.recent.favorites.forEach(f => { %>
+          <tr>
+            <td><code><%= f.buyerId %></code></td>
+            <td><code><%= f.listingId %></code></td>
+            <td><%= fmtDate(f.createdAt) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p class="muted mt">
+  Tip: you can also inspect the database from the terminal with
+  <code>npm run db:status</code>, or hit <code>/api/status</code> for the live JSON view.
+</p>
+
+<%- include('../partials/footer') %>

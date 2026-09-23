@@ -6,6 +6,9 @@ const db = require('../data/db');
 const { requireAdmin } = require('../middleware/auth');
 const { inr, fmtQty, fmtDate } = require('../utils/format');
 const { cropVolume } = require('../utils/trends');
+const bus = require('../utils/bus');
+const pg = require('../database/pg');
+const fb = require('../database/firebase');
 
 const router = express.Router();
 
@@ -37,12 +40,35 @@ router.get('/admin', requireAdmin, (req, res) => {
   });
 });
 
+/* ------------------------- Database status ------------------------- */
+
+router.get('/admin/db', requireAdmin, async (req, res) => {
+  const [otpRows] = await Promise.all([pg.countOtps().catch(() => 0)]);
+  res.render('admin/db', {
+    title: 'Database status',
+    db: db.getDbStatus(),
+    inr,
+    fmtQty,
+    fmtDate,
+    pgStatus: { ...pg.status(), rows: otpRows },
+    fbStatus: fb.status(),
+    rtClients: bus.clientCount(),
+    fmtSize: (bytes) =>
+      bytes >= 1048576
+        ? (bytes / 1048576).toFixed(2) + ' MB'
+        : bytes >= 1024
+          ? (bytes / 1024).toFixed(1) + ' KB'
+          : bytes + ' bytes',
+  });
+});
+
 /* --------------------- Moderating a listing ------------------------ */
 
 router.post('/admin/listings/:id/remove', requireAdmin, (req, res) => {
   const listing = db.findListingById(req.params.id);
   if (!listing) return res.redirect('/admin?err=Listing+not+found');
   db.removeListing(listing.id);
+  bus.broadcast('listings', { listingId: listing.id });
   res.redirect('/admin?msg=' + encodeURIComponent(`Listing "${listing.crop}" removed.`));
 });
 
@@ -55,6 +81,7 @@ router.post('/admin/users/:id/deactivate', requireAdmin, (req, res) => {
     return res.redirect('/admin?err=You+cannot+deactivate+your+own+account');
   }
   db.updateUser(target.id, { active: false });
+  bus.broadcast('users', { userId: target.id });
   res.redirect('/admin?msg=' + encodeURIComponent(`${target.name} deactivated. Their listings are hidden.`));
 });
 
@@ -62,6 +89,7 @@ router.post('/admin/users/:id/activate', requireAdmin, (req, res) => {
   const target = db.findUserById(req.params.id);
   if (!target) return res.redirect('/admin?err=User+not+found');
   db.updateUser(target.id, { active: true });
+  bus.broadcast('users', { userId: target.id });
   res.redirect('/admin?msg=' + encodeURIComponent(`${target.name} reactivated.`));
 });
 

@@ -2,6 +2,8 @@
 // Express application setup: middleware, view engine, route mounting.
 // server.js is the tiny entry point that starts this app.
 
+require('dotenv').config(); // loads SMTP_* secrets from .env (git-ignored)
+
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
@@ -9,12 +11,11 @@ const methodOverride = require('method-override');
 
 const config = require('./config');
 const { attachUser } = require('./middleware/auth');
-const { ensureSeeded } = require('./seed');
+const bus = require('./utils/bus');
+const pg = require('./database/pg');
+const fb = require('./database/firebase');
 
 const app = express();
-
-// Auto-create demo data on first run (no-op when store already exists).
-ensureSeeded();
 
 /* ------------------------------------------------------------------ */
 /* View engine                                                         */
@@ -64,6 +65,41 @@ app.use('/', require('./routes/listingRoutes'));
 app.use('/', require('./routes/farmerRoutes'));
 app.use('/', require('./routes/buyerRoutes'));
 app.use('/', require('./routes/adminRoutes'));
+
+/* ------------------------------------------------------------------ */
+/* Realtime sync (Server-Sent Events)                                  */
+/* ------------------------------------------------------------------ */
+app.get('/events', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    Connection: 'keep-alive',
+    'X-Accel-Buffering': 'no',
+  });
+  res.write('retry: 3000\n\n');
+  bus.addClient(res);
+  req.on('close', () => bus.removeClient(res));
+});
+
+/* ------------------------------------------------------------------ */
+/* Live system status (used by the UI + demos)                         */
+/* ------------------------------------------------------------------ */
+app.get('/api/status', async (req, res) => {
+  const [otpRows, fbRows] = await Promise.all([
+    pg.countOtps().catch(() => 0),
+    Promise.resolve(0),
+  ]);
+  res.json({
+    ok: true,
+    uptimeSec: Math.round(process.uptime()),
+    realtimeClients: bus.clientCount(),
+    stores: {
+      appData: { engine: 'SQLite (sql.js)', file: 'data/krishisetu.sqlite' },
+      otp: { ...pg.status(), rows: otpRows },
+      firebase: { ...fb.status(), rows: fbRows },
+    },
+  });
+});
 
 /* ------------------------------------------------------------------ */
 /* 404 + error handler                                                 */

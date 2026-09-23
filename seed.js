@@ -2,15 +2,11 @@
 // Creates demo data (users, listings, interests, favorites) so the
 // website is instantly presentable for a demo/viva.
 //
-//   npm run seed      -> fresh demo store (overwrites)
-//   npm start         -> auto-seeds only when data/store.json is missing
+//   npm run seed      -> fresh demo data (overwrites the SQLite database)
+//   npm start         -> auto-seeds only when the database is empty
 
-const fs = require('fs');
-const path = require('path');
 const bcrypt = require('bcryptjs');
-const { VILLAGES, CROPS, BUSINESS_TYPES } = require('./config');
-
-const STORE_FILE = path.join(__dirname, 'data', 'store.json');
+const { BUSINESS_TYPES } = require('./config');
 
 const hash = (pw) => bcrypt.hashSync(pw, 10);
 
@@ -35,32 +31,32 @@ function buildDemoStore() {
 
   const farmers = [
     {
-      id: 'u_f1', name: 'Ramesh Chandra', email: 'ramesh@demo.in',
-      passwordHash: hash('farmer123'), role: 'farmer', village: 'Andipalem',
+      id: 'u_f1', name: 'Ramesh Chandra', email: null, username: null, passwordHash: null,
+      role: 'farmer', village: 'Andipalem', address: '4-56, Main Road, near Hanuman temple',
       phone: '9876512341', landSize: '5 acres', active: true, createdAt: daysAgo(45),
     },
     {
-      id: 'u_f2', name: 'Lakshmi Devi', email: 'lakshmi@demo.in',
-      passwordHash: hash('farmer123'), role: 'farmer', village: 'Gudivada',
+      id: 'u_f2', name: 'Lakshmi Devi', email: null, username: null, passwordHash: null,
+      role: 'farmer', village: 'Gudivada', address: '12-3A, Market Street, Gudivada',
       phone: '9876512342', landSize: '8 acres', active: true, createdAt: daysAgo(40),
     },
     {
-      id: 'u_f3', name: 'Venkateswara Rao', email: 'venkat@demo.in',
-      passwordHash: hash('farmer123'), role: 'farmer', village: 'Machilipatnam',
+      id: 'u_f3', name: 'Venkateswara Rao', email: null, username: null, passwordHash: null,
+      role: 'farmer', village: 'Machilipatnam', address: '2-89, Pinnamaneni Colony',
       phone: '9876512343', landSize: '12 acres', active: true, createdAt: daysAgo(38),
     },
   ];
 
   const buyers = [
     {
-      id: 'u_b1', name: 'Sri Sai Traders', email: 'buyer@demo.in',
-      passwordHash: hash('buyer123'), role: 'buyer', village: 'Vijayawada',
+      id: 'u_b1', name: 'Sri Sai Traders', email: null, username: null, passwordHash: null,
+      role: 'buyer', village: 'Vijayawada', address: 'Shop 21, Vegetable Market, Benz Circle',
       phone: '9988776655', businessType: BUSINESS_TYPES[0], active: true,
       createdAt: daysAgo(35),
     },
     {
-      id: 'u_b2', name: 'Anand Super Stores', email: 'anand@demo.in',
-      passwordHash: hash('buyer123'), role: 'buyer', village: 'Nuzvid',
+      id: 'u_b2', name: 'Anand Super Stores', email: null, username: null, passwordHash: null,
+      role: 'buyer', village: 'Nuzvid', address: '7-1, Kothapeta Road, Nuzvid',
       phone: '9988776656', businessType: BUSINESS_TYPES[1], active: true,
       createdAt: daysAgo(30),
     },
@@ -142,32 +138,42 @@ function buildDemoStore() {
   return { users: [admin, ...farmers, ...buyers], listings, interests, favorites };
 }
 
-// Writes a fresh demo store (used by `npm run seed`).
-function seed(force = true) {
+// Replaces all data in the SQLite database with a fresh demo store.
+function seed() {
+  const db = require('./data/db');
   const store = buildDemoStore();
-  fs.writeFileSync(STORE_FILE, JSON.stringify(store, null, 2));
+  db.seedStore(store);
   return store;
 }
 
-// Auto-seeds only when the store file does not exist yet (used at startup).
+// Auto-seeds only when the database is empty (used at startup).
 function ensureSeeded() {
-  if (!fs.existsSync(STORE_FILE)) {
+  const db = require('./data/db');
+  if (db.countUsers() === 0) {
     seed();
-    console.log('🌾 No data store found — seeded demo data.');
+    console.log('🌾 Database was empty — seeded demo data.');
   }
 }
 
 if (require.main === module) {
-  const store = seed();
-  console.log('✅ Demo data seeded into data/store.json');
-  console.log('   Users:', store.users.length,
-    '| Listings:', store.listings.length,
-    '| Interests:', store.interests.length,
-    '| Favorites:', store.favorites.length);
-  console.log('\n   Login credentials:');
-  console.log('   Admin : SURYAS / SURYAS2007           (also: suryas@krishisetu.gov)');
-  console.log('   Farmer: ramesh@demo.in / farmer123');
-  console.log('   Buyer : buyer@demo.in / buyer123');
+  const db = require('./data/db');
+  db.init()
+    .then(() => {
+      const store = seed();
+      console.log('✅ Demo data seeded into data/krishisetu.sqlite');
+      console.log('   Users:', store.users.length,
+        '| Listings:', store.listings.length,
+        '| Interests:', store.interests.length,
+        '| Favorites:', store.favorites.length);
+      console.log('\n   How to enter (no passwords):');
+      console.log('   Farmer: name "Ramesh Chandra" · mobile 9876512341 · village Andipalem');
+      console.log('   Buyer : name "Sri Sai Traders" · mobile 9988776655 · village Vijayawada');
+      console.log('   Admin (only password login): SURYAS / SURYAS2007');
+    })
+    .catch((err) => {
+      console.error('Seed failed:', err);
+      process.exit(1);
+    });
 }
 
 module.exports = { seed, ensureSeeded, buildDemoStore };

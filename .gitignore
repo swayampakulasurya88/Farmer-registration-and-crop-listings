@@ -2,4 +2,6 @@ node_modules/
 npm-debug.log*
 .env
 data/store.json
+data/*.sqlite
+data/pg/
 .DS_Store

@@ -5,6 +5,7 @@ const express = require('express');
 const db = require('../data/db');
 const config = require('../config');
 const { requireFarmer } = require('../middleware/auth');
+const bus = require('../utils/bus');
 
 const router = express.Router();
 
@@ -98,8 +99,10 @@ router.post('/farmer/listings', requireFarmer, (req, res) => {
   const listing = db.addListing({
     ...listingFromBody(req.body),
     farmerId: req.currentUser.id,
+    farmerName: req.currentUser.name,
     district: config.DISTRICT,
   });
+  bus.broadcast('listings', { listingId: listing.id });
   res.redirect(`/listings/${listing.id}?msg=${encodeURIComponent('Your ' + listing.crop + ' listing is now live.')}`);
 });
 
@@ -145,6 +148,7 @@ router.put('/farmer/listings/:id', requireFarmer, (req, res) => {
   }
 
   db.updateListing(existing.id, listingFromBody(req.body));
+  bus.broadcast('listings', { listingId: existing.id });
   res.redirect(`/farmer/dashboard?msg=${encodeURIComponent(existing.crop + ' listing updated.')}`);
 });
 
@@ -161,6 +165,7 @@ router.post('/farmer/listings/:id/status', requireFarmer, (req, res) => {
   }
   const next = listing.status === 'active' ? 'sold' : 'active';
   db.updateListing(listing.id, { status: next });
+  bus.broadcast('listings', { listingId: listing.id });
   const msg = next === 'sold' ? 'marked as sold' : 'marked as available again';
   res.redirect(`/farmer/dashboard?msg=${encodeURIComponent(listing.crop + ' ' + msg + '.')}`);
 });
@@ -177,6 +182,7 @@ router.delete('/farmer/listings/:id', requireFarmer, (req, res) => {
     });
   }
   db.removeListing(listing.id);
+  bus.broadcast('listings', { listingId: listing.id });
   res.redirect('/farmer/dashboard?msg=' + encodeURIComponent(listing.crop + ' listing deleted.'));
 });
 

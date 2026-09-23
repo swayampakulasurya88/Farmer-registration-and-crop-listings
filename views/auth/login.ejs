@@ -1,41 +1,146 @@
 <%- include('../partials/header') %>
 
 <div class="auth-wrap">
-  <div class="auth-card">
+  <div class="auth-card auth-card-wide">
     <div class="auth-head">
       <span class="auth-emoji">🌾</span>
-      <h1>Welcome back</h1>
-      <p>Log in to KrishiSetu — <%= config.DISTRICT %></p>
+      <h1>Welcome to KrishiSetu</h1>
+      <p><%= config.DISTRICT %> — farmers &amp; buyers enter with <strong>name, mobile &amp; address</strong>. No passwords, no usernames.</p>
     </div>
 
-    <form method="post" action="/auth/login" class="form" novalidate>
-      <div class="field">
-        <label for="login">Email address or username</label>
-        <input type="text" id="login" name="login" value="<%= form.login || '' %>" placeholder="you@example.com or SURYAS" required autofocus>
-        <% if (fieldErrors.login) { %><p class="field-error"><%= fieldErrors.login %></p><% } %>
-      </div>
+    <div class="auth-tabs" role="tablist">
+      <button type="button" class="auth-tab <%= tab === 'admin' ? '' : 'active' %>" data-ks-tab="panel-user">👨‍🌾 Farmer / Buyer</button>
+      <button type="button" class="auth-tab <%= tab === 'admin' ? 'active' : '' %>" data-ks-tab="panel-admin">🛡️ Admin login</button>
+    </div>
 
-      <div class="field">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="••••••••" required>
-      </div>
+    <!-- ================= Farmer / Buyer entry ================= -->
+    <section class="auth-panel <%= tab === 'admin' ? 'hidden' : '' %>" id="panel-user">
+      <p class="auth-lead">
+        New here? Your name, mobile &amp; address create your account — the details
+        appear in the admin panel. Returning? Enter the same details and you're in.
+      </p>
 
-      <p class="forgot-link"><a href="/auth/forgot">Forgot password?</a></p>
+      <form method="post" action="/auth/login" class="form" novalidate>
+        <input type="hidden" name="tab" value="user">
 
-      <button type="submit" class="btn btn-primary btn-block btn-lg">Login</button>
-    </form>
+        <div class="field">
+          <label>I am a…</label>
+          <div class="role-picker">
+            <label class="role-option <%= form.role === 'buyer' ? '' : 'selected' %>">
+              <input type="radio" name="role" value="farmer" <%= form.role === 'buyer' ? '' : 'checked' %>>
+              <strong>👨‍🌾 Farmer</strong>
+              <small>I grow and sell crops</small>
+            </label>
+            <label class="role-option <%= form.role === 'buyer' ? 'selected' : '' %>">
+              <input type="radio" name="role" value="buyer" <%= form.role === 'buyer' ? 'checked' : '' %>>
+              <strong>🛒 Buyer</strong>
+              <small>I buy crops to trade or use</small>
+            </label>
+          </div>
+          <% if (fieldErrors.role) { %><p class="field-error"><%= fieldErrors.role %></p><% } %>
+        </div>
 
-    <p class="auth-foot">New here? <a href="/auth/register">Create an account</a></p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="name">Full name</label>
+            <input type="text" id="name" name="name" value="<%= form.name || '' %>" placeholder="e.g. Ramesh Chandra" required autofocus>
+            <% if (fieldErrors.name) { %><p class="field-error"><%= fieldErrors.name %></p><% } %>
+          </div>
+          <div class="field">
+            <label for="phone">Mobile number</label>
+            <input type="tel" id="phone" name="phone" value="<%= form.phone || '' %>" placeholder="98765 12345" required>
+            <% if (fieldErrors.phone) { %><p class="field-error"><%= fieldErrors.phone %></p><% } %>
+          </div>
+          <div class="field">
+            <label for="village">Village / town</label>
+            <select id="village" name="village">
+              <option value="">— Select (optional) —</option>
+              <% villages.forEach((v) => { %>
+                <option value="<%= v %>" <%= form.village === v ? 'selected' : '' %>><%= v %></option>
+              <% }) %>
+            </select>
+            <% if (fieldErrors.village) { %><p class="field-error"><%= fieldErrors.village %></p><% } %>
+          </div>
+          <div class="field">
+            <label for="address">Address (street / landmark)</label>
+            <input type="text" id="address" name="address" value="<%= form.address || '' %>" placeholder="e.g. 4-56, Main Road, near temple">
+            <% if (fieldErrors.address) { %><p class="field-error"><%= fieldErrors.address %></p><% } %>
+          </div>
+        </div>
+
+        <div class="field farmer-only hidden">
+          <label for="landSize">Land size (farmer)</label>
+          <input type="text" id="landSize" name="landSize" value="<%= form.landSize || '' %>" placeholder="e.g. 5 acres">
+        </div>
+
+        <div class="field buyer-only hidden">
+          <label for="businessType">Business type (buyer)</label>
+          <select id="businessType" name="businessType">
+            <option value="">— Select —</option>
+            <% businessTypes.forEach((t) => { %>
+              <option value="<%= t %>" <%= form.businessType === t ? 'selected' : '' %>><%= t %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg mt">🚪 Enter KrishiSetu</button>
+        <p class="auth-micro">No password. Your mobile number identifies your account.</p>
+      </form>
+    </section>
+
+    <!-- ================= Admin login ================= -->
+    <section class="auth-panel <%= tab === 'admin' ? '' : 'hidden' %>" id="panel-admin">
+      <p class="auth-lead">Only the district administrator logs in with a username &amp; password.</p>
+
+      <form method="post" action="/auth/login" class="form" novalidate>
+        <input type="hidden" name="tab" value="admin">
+
+        <div class="field">
+          <label for="login">Username or email</label>
+          <input type="text" id="login" name="login" value="<%= form.login || '' %>" placeholder="SURYAS" required autofocus>
+          <% if (fieldErrors.login) { %><p class="field-error"><%= fieldErrors.login %></p><% } %>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required>
+        </div>
+
+        <p class="forgot-link"><a href="/auth/forgot">Forgot password?</a></p>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg">🛡️ Admin login</button>
+      </form>
+    </section>
 
     <details class="demo-cred">
       <summary>Demo accounts (click to reveal)</summary>
       <ul>
-        <li><strong>Farmer:</strong> ramesh@demo.in / farmer123</li>
-        <li><strong>Buyer:</strong> buyer@demo.in / buyer123</li>
-        <li><strong>Admin:</strong> <b>SURYAS</b> / SURYAS2007</li>
+        <li><strong>Farmer:</strong> Ramesh Chandra · <b>9876512341</b> · Andipalem</li>
+        <li><strong>Buyer:</strong> Sri Sai Traders · <b>9988776655</b> · Vijayawada</li>
+        <li><strong>Admin (only password login):</strong> <b>SURYAS</b> / SURYAS2007</li>
       </ul>
     </details>
   </div>
 </div>
+
+<script>
+  (function () {
+    'use strict';
+    var tabs = document.querySelectorAll('.auth-tab');
+    var panels = {
+      'panel-user': document.getElementById('panel-user'),
+      'panel-admin': document.getElementById('panel-admin'),
+    };
+    tabs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        tabs.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        Object.keys(panels).forEach(function (id) {
+          if (panels[id]) panels[id].classList.toggle('hidden', id !== btn.getAttribute('data-ks-tab'));
+        });
+      });
+    });
+  })();
+</script>
 
 <%- include('../partials/footer') %>

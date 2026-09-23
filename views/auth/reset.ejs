@@ -4,8 +4,8 @@
   <div class="auth-card">
     <div class="auth-head">
       <span class="auth-emoji">🔐</span>
-      <h1>Reset your password</h1>
-      <p>Enter the OTP sent to your email and choose a new password.</p>
+      <h1>Reset admin password</h1>
+      <p>Enter the OTP sent to the admin email, then choose a new password.</p>
     </div>
 
     <% if (demoOtp) { %>
@@ -17,8 +17,8 @@
 
     <form method="post" action="/auth/reset" class="form" novalidate>
       <div class="field">
-        <label for="login">Email address or username</label>
-        <input type="text" id="login" name="login" value="<%= form.login || '' %>" placeholder="you@example.com or SURYAS" required>
+        <label for="login">Admin username or email</label>
+        <input type="text" id="login" name="login" value="<%= form.login || '' %>" placeholder="SURYAS" required>
         <% if (fieldErrors.login) { %><p class="field-error"><%= fieldErrors.login %></p><% } %>
       </div>
 
