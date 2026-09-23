@@ -36,11 +36,17 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY . .
 
 # Runtime needs a writable data dir for SQLite + embedded PostgreSQL.
-# The app intentionally runs as ROOT so it can write into platform volumes
-# (Railway/Render mount them root-owned; the non-root 'node' user got EACCES
-# and the whole container failed). This image holds no sensitive files — env
-# secrets are injected at runtime.
-RUN mkdir -p /var/lib/krishisetu
+# The entrypoint (entrypoint.sh) fixes the ownership of mounted volumes
+# (root-owned on Railway/Render/docker -v) and then drops back to the 'node'
+# user, so the embedded PostgreSQL can run (it refuses to run as root) while
+# volumes stay writable.
+RUN apt-get update && apt-get install -y --no-install-recommends gosu && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /var/lib/krishisetu && chown -R node:node /var/lib/krishisetu
+
+# Start as root so the entrypoint can chown the mounted volume, then it
+# re-execs the app as 'node' via gosu.
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 3000
 
@@ -52,4 +58,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||3000)+'/api/status').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["node", "server.js"]
