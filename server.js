@@ -28,6 +28,18 @@ async function main() {
     console.log(`   URL      : http://localhost:${PORT}`);
     console.log(`   Realtime : SSE /events (${busCount()} tabs watching live) — no page refresh needed`);
   });
+
+  // Graceful shutdown for servers/orchestrators (Docker, PM2, Railway…):
+  // stop the embedded PostgreSQL cluster cleanly before exiting.
+  const shutdown = async (signal) => {
+    console.log(`\n${signal} received — shutting down gracefully…`);
+    try {
+      await pg.stop();
+    } catch (e) { /* already stopped */ }
+    process.exit(0);
+  };
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
 // Small helper so the banner shows how many tabs are watching live.

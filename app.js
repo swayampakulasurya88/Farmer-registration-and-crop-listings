@@ -18,6 +18,10 @@ const fb = require('./database/firebase');
 
 const app = express();
 
+// Correct client IPs when running behind a reverse proxy (Railway, Render,
+// Nginx…). Safe locally: no proxy → Express uses the socket address.
+app.set('trust proxy', 1);
+
 /* ------------------------------------------------------------------ */
 /* View engine                                                         */
 /* ------------------------------------------------------------------ */

@@ -6,6 +6,8 @@
 //   * Every write is persisted to disk immediately (synchronous)
 //   * On first run, existing data is imported from the legacy JSON store
 //     (data/store.json) so nothing is lost
+//   * Set DATA_DIR to place the SQLite file somewhere else (mount a volume
+//     there on a server so data survives restarts, e.g. in Docker)
 //
 // The API below is identical to the old JSON-file store, so routes were
 // not touched.
@@ -14,8 +16,11 @@ const fs = require('fs');
 const path = require('path');
 const initSqlJs = require('sql.js');
 
-const DB_FILE = path.join(__dirname, 'krishisetu.sqlite');
-const LEGACY_FILE = path.join(__dirname, 'store.json');
+// DATA_DIR defaults to this folder (data/) — exactly the local behaviour.
+// On a deployed server, point it at a mounted volume (e.g. DATA_DIR=/app/data).
+const DATA_DIR = process.env.DATA_DIR || __dirname;
+const DB_FILE = path.join(DATA_DIR, 'krishisetu.sqlite');
+const LEGACY_FILE = path.join(DATA_DIR, 'store.json');
 const WASM_FILE = path.join(__dirname, '..', 'node_modules', 'sql.js', 'dist');
 
 const SCHEMA = `

@@ -1,0 +1,52 @@
+# KrishiSetu — full stack: web app + PostgreSQL (forgot-password OTP store).
+#
+#   cp .env.example .env        # then edit secrets
+#   docker compose up -d --build
+#   open http://localhost:3000
+#
+# Data volumes:
+#   appdata -> SQLite database (farmers, buyers, listings)  survives restarts
+#   pgdata  -> PostgreSQL data (OTP store)                  survives restarts
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: krishisetu
+      POSTGRES_PASSWORD: ${PG_PASS:-krishisetu}
+      POSTGRES_DB: krishisetu
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U krishisetu -d krishisetu"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      DATA_DIR: /app/data
+      DATABASE_URL: postgres://krishisetu:${PG_PASS:-krishisetu}@db:5432/krishisetu
+      SESSION_SECRET: ${SESSION_SECRET:-change-me-to-a-long-random-string}
+      DISTRICT: ${DISTRICT:-Krishna District}
+      STATE: ${STATE:-Andhra Pradesh}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+    volumes:
+      - appdata:/app/data
+
+volumes:
+  appdata:
+  pgdata:

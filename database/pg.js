@@ -4,7 +4,7 @@
 // Everything runs in userspace via the `embedded-postgres` npm package
 // (real Postgres binaries, no system install or sudo needed):
 //
-//   * data directory : data/pg              (git-ignored)
+//   * data directory : data/pg (inside DATA_DIR if set, default data/)
 //   * port           : 5433 (override with PG_PORT)
 //   * database       : krishisetu (override with PG_DATABASE)
 //
@@ -29,7 +29,10 @@ try {
 
 const { Pool } = require('pg');
 
-const PG_DIR = path.join(__dirname, '..', 'data', 'pg');
+// Keep the embedded cluster next to the SQLite file: DATA_DIR overrides the
+// default data/ folder (used by Docker / cloud volumes); PG_DIR follows it.
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
+const PG_DIR = path.join(DATA_DIR, 'pg');
 const SCHEMA_FILE = path.join(__dirname, 'schema.sql');
 
 const DATABASE_URL = process.env.DATABASE_URL || '';
