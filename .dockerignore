@@ -1,6 +1,7 @@
 # Never ship secrets, the live database, or dependency folders into the image.
 node_modules
-data
+data/*.sqlite
+data/pg
 .env
 .env.*
 !.env.example
