@@ -6,3 +6,4 @@ data/*.sqlite
 data/pg/
 .DS_Store
 /*.zip
+public/*.zip
