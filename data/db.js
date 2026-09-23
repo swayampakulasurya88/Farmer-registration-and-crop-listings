@@ -78,9 +78,10 @@ CREATE INDEX IF NOT EXISTS idx_interests_listing ON interests(listingId);
 CREATE INDEX IF NOT EXISTS idx_favorites_buyer   ON favorites(buyerId);
 `;
 
-let db = null;      // SQL.Database instance
-let ready = false;  // set to true after init()
-let dirty = false;  // pending changes not yet written to disk
+let db = null;        // SQL.Database instance
+let ready = false;    // set to true after init()
+let dirty = false;    // pending changes not yet written to disk
+let initPromise = null; // shared init promise -> init() is idempotent
 
 /* ------------------------------------------------------------------ */
 /* Initialisation                                                      */
@@ -88,6 +89,15 @@ let dirty = false;  // pending changes not yet written to disk
 
 async function init() {
   if (ready) return;
+  if (initPromise) return initPromise;
+  initPromise = bootstrap();
+  return initPromise;
+}
+
+// The real work of opening the database. Kept separate so concurrent/early
+// callers of init() all wait on the SAME promise — no double-open, no
+// "Database is not initialised yet" races.
+async function bootstrap() {
   const SQL = await initSqlJs({ locateFile: (file) => path.join(WASM_FILE, file) });
 
   if (fs.existsSync(DB_FILE)) {
